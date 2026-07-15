@@ -13,7 +13,7 @@ export function StatCard({ label, value, sub, accent, icon }) {
           <p style={{ fontSize: 30, fontFamily: "'Playfair Display', serif", fontWeight: 900, fontStyle: 'italic', color: accent || '#1E1F21', margin: 0, lineHeight: 1 }}>{value}</p>
           {sub && <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.5)', margin: '8px 0 0', fontWeight: 300 }}>{sub}</p>}
         </div>
-        <span style={{ fontSize: 24, opacity: 0.1, color: '#1E1F21' }}>{icon}</span>
+        <span style={{ fontSize: 24, color: accent || 'rgba(30,31,33,0.1)' }}>{icon}</span>
       </div>
     </div>
   )
