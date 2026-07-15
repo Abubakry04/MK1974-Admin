@@ -122,17 +122,17 @@ function AddProductModal({ onClose, categories, colors = [], sizes = [], onSave 
 
   return (
     <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 100,
-      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
+      position: 'fixed', inset: 0, background: 'rgba(30,31,33,0.5)', zIndex: 100,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, backdropFilter: 'blur(4px)'
     }}>
       <div style={{
-        background: '#111', border: '1px solid rgba(242,235,220,0.1)',
+        background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)',
         width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto',
-        padding: 32,
+        padding: 32, boxShadow: '0 12px 40px rgba(0,0,0,0.08)'
       }}>
-        <div style={{ display: 'flex', justifycontent: 'space-between', alignitems: 'center', marginBottom: 24 }}>
-          <p style={{ fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#c8f542', margin: 0, fontWeight: 500 }}>New Product</p>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(242,235,220,0.4)', fontSize: 20 }}>×</button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+          <p style={{ fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#968574', margin: 0, fontWeight: 600 }}>New Product</p>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(30,31,33,0.4)', fontSize: 20 }}>×</button>
         </div>
 
         {[
@@ -141,45 +141,45 @@ function AddProductModal({ onClose, categories, colors = [], sizes = [], onSave 
           { label: 'Stock Quantity', key: 'stockQuantity', placeholder: '50', type: 'number' },
         ].map(f => (
           <div key={f.key} style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.4)', marginBottom: 6, fontWeight: 500 }}>{f.label}</label>
+            <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 6, fontWeight: 600 }}>{f.label}</label>
             <input
               type={f.type}
               placeholder={f.placeholder}
               value={form[f.key]}
               onChange={e => set(f.key, e.target.value)}
-              style={{ width: '100%', background: 'rgba(242,235,220,0.05)', border: '1px solid rgba(242,235,220,0.1)', color: '#f2ebdc', padding: '10px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box' }}
+              style={{ width: '100%', background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.1)', color: '#1E1F21', padding: '10px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box' }}
             />
           </div>
         ))}
 
         <div style={{ marginBottom: 16 }}>
-          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.4)', marginBottom: 6, fontWeight: 500 }}>Description</label>
+          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 6, fontWeight: 600 }}>Description</label>
           <textarea
             placeholder="Product description..."
             value={form.description}
             onChange={e => set('description', e.target.value)}
             rows={3}
-            style={{ width: '100%', background: 'rgba(242,235,220,0.05)', border: '1px solid rgba(242,235,220,0.1)', color: '#f2ebdc', padding: '10px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box', resize: 'vertical' }}
+            style={{ width: '100%', background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.1)', color: '#1E1F21', padding: '10px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box', resize: 'vertical' }}
           />
         </div>
 
         <div style={{ marginBottom: 20 }}>
-          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.4)', marginBottom: 8, fontWeight: 500 }}>Product Images</label>
+          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 8, fontWeight: 600 }}>Product Images</label>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginBottom: 10 }}>
             {form.images.map((img, idx) => (
-              <div key={idx} style={{ position: 'relative', width: 64, height: 64, border: '1px solid rgba(242,235,220,0.1)' }}>
+              <div key={idx} style={{ position: 'relative', width: 64, height: 64, border: '1px solid rgba(30,31,33,0.1)' }}>
                 <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <button type="button" onClick={() => set('images', form.images.filter((_, i) => i !== idx))} style={{
-                  position: 'absolute', top: -4, right: -4, background: '#f87171', color: '#fff',
+                  position: 'absolute', top: -4, right: -4, background: '#991b1b', color: '#fff',
                   border: 'none', borderRadius: '50%', width: 16, height: 16, fontSize: 10, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1
                 }}>×</button>
               </div>
             ))}
             <label style={{
-              width: 64, height: 64, border: '1px dashed rgba(242,235,220,0.2)',
+              width: 64, height: 64, border: '1px dashed rgba(30,31,33,0.2)',
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', fontSize: 10, color: 'rgba(242,235,220,0.4)'
+              cursor: 'pointer', fontSize: 10, color: 'rgba(30,31,33,0.5)'
             }}>
               <span style={{ fontSize: 16, marginBottom: 2 }}>+</span>
               <span>Upload</span>
@@ -188,62 +188,68 @@ function AddProductModal({ onClose, categories, colors = [], sizes = [], onSave 
           </div>
         </div>
 
-        {categories.length > 0 && (
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.4)', marginBottom: 8, fontWeight: 500 }}>Categories</label>
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 8, fontWeight: 600 }}>Categories</label>
+          {categories && categories.length > 0 ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {categories.map(c => (
                 <button key={c.id} onClick={() => toggleCat(c.id)} style={{
                   padding: '5px 12px', fontSize: 10, letterSpacing: '0.1em',
                   fontFamily: "'Inter', sans-serif", cursor: 'pointer',
-                  background: form.categoryIds.includes(c.id) ? '#c8f542' : 'rgba(242,235,220,0.05)',
-                  color: form.categoryIds.includes(c.id) ? '#080808' : 'rgba(242,235,220,0.5)',
-                  border: form.categoryIds.includes(c.id) ? 'none' : '1px solid rgba(242,235,220,0.1)',
-                  transition: 'all 0.15s',
+                  background: form.categoryIds.includes(c.id) ? '#968574' : '#FAF9F6',
+                  color: form.categoryIds.includes(c.id) ? '#FAF9F6' : 'rgba(30,31,33,0.6)',
+                  border: form.categoryIds.includes(c.id) ? '1px solid #968574' : '1px solid rgba(30,31,33,0.2)',
+                  transition: 'all 0.15s', borderRadius: 4,
                 }}>{c.name}</button>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.5)', margin: 0 }}>No categories created yet. Add them in Settings.</p>
+          )}
+        </div>
 
-        {colors && colors.length > 0 && (
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.4)', marginBottom: 8, fontWeight: 500 }}>Colors</label>
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 8, fontWeight: 600 }}>Colors</label>
+          {colors && colors.length > 0 ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {colors.map(c => (
                 <button key={c.id} onClick={() => toggleColor(c.id)} style={{
                   padding: '5px 12px', fontSize: 10, letterSpacing: '0.1em',
                   fontFamily: "'Inter', sans-serif", cursor: 'pointer',
-                  background: form.selectedColors.includes(c.id) ? '#c8f542' : 'rgba(242,235,220,0.05)',
-                  color: form.selectedColors.includes(c.id) ? '#080808' : 'rgba(242,235,220,0.5)',
-                  border: form.selectedColors.includes(c.id) ? 'none' : '1px solid rgba(242,235,220,0.1)',
-                  transition: 'all 0.15s',
+                  background: form.selectedColors.includes(c.id) ? '#968574' : '#FAF9F6',
+                  color: form.selectedColors.includes(c.id) ? '#FAF9F6' : 'rgba(30,31,33,0.6)',
+                  border: form.selectedColors.includes(c.id) ? '1px solid #968574' : '1px solid rgba(30,31,33,0.2)',
+                  transition: 'all 0.15s', borderRadius: 4,
                 }}>{c.name}</button>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.5)', margin: 0 }}>No colors created yet. Add them in Settings &gt; Catalogue.</p>
+          )}
+        </div>
 
-        {sizes && sizes.length > 0 && (
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.4)', marginBottom: 8, fontWeight: 500 }}>Sizes</label>
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 8, fontWeight: 600 }}>Sizes</label>
+          {sizes && sizes.length > 0 ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {sizes.map(s => (
                 <button key={s.id} onClick={() => toggleSize(s.id)} style={{
                   padding: '5px 12px', fontSize: 10, letterSpacing: '0.1em',
                   fontFamily: "'Inter', sans-serif", cursor: 'pointer',
-                  background: form.selectedSizes.includes(s.id) ? '#c8f542' : 'rgba(242,235,220,0.05)',
-                  color: form.selectedSizes.includes(s.id) ? '#080808' : 'rgba(242,235,220,0.5)',
-                  border: form.selectedSizes.includes(s.id) ? 'none' : '1px solid rgba(242,235,220,0.1)',
-                  transition: 'all 0.15s',
+                  background: form.selectedSizes.includes(s.id) ? '#968574' : '#FAF9F6',
+                  color: form.selectedSizes.includes(s.id) ? '#FAF9F6' : 'rgba(30,31,33,0.6)',
+                  border: form.selectedSizes.includes(s.id) ? '1px solid #968574' : '1px solid rgba(30,31,33,0.2)',
+                  transition: 'all 0.15s', borderRadius: 4,
                 }}>{s.name}</button>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.5)', margin: 0 }}>No sizes created yet. Add them in Settings &gt; Catalogue.</p>
+          )}
+        </div>
 
         {error && (
-          <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', padding: '10px 14px', fontSize: 12, color: '#f87171', marginBottom: 16 }}>{error}</div>
+          <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', padding: '10px 14px', fontSize: 12, color: '#991b1b', marginBottom: 16 }}>{error}</div>
         )}
 
         <div style={{ display: 'flex', gap: 10 }}>
@@ -358,11 +364,11 @@ function EditProductModal({ product, categories, onClose, onSave, onDelete }) {
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div style={{ background: '#111', border: '1px solid rgba(242,235,220,0.1)', width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto', padding: 32 }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(30,31,33,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, backdropFilter: 'blur(4px)' }}>
+      <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto', padding: 32, boxShadow: '0 12px 40px rgba(0,0,0,0.08)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <p style={{ fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#c8f542', margin: 0, fontWeight: 500 }}>Edit Product · ID {product.id}</p>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(242,235,220,0.4)', fontSize: 20 }}>×</button>
+          <p style={{ fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#968574', margin: 0, fontWeight: 600 }}>Edit Product · ID {product.id}</p>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(30,31,33,0.4)', fontSize: 20 }}>×</button>
         </div>
         {[
           { label: 'Product Name *', key: 'name', type: 'text' },
@@ -370,34 +376,34 @@ function EditProductModal({ product, categories, onClose, onSave, onDelete }) {
           { label: 'Stock Quantity', key: 'stockQuantity', type: 'number' },
         ].map(f => (
           <div key={f.key} style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.4)', marginBottom: 6, fontWeight: 500 }}>{f.label}</label>
+            <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 6, fontWeight: 600 }}>{f.label}</label>
             <input type={f.type} value={form[f.key]} onChange={e => set(f.key, e.target.value)}
-              style={{ width: '100%', background: 'rgba(242,235,220,0.05)', border: '1px solid rgba(242,235,220,0.1)', color: '#f2ebdc', padding: '10px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box' }} />
+              style={{ width: '100%', background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.1)', color: '#1E1F21', padding: '10px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box' }} />
           </div>
         ))}
         <div style={{ marginBottom: 16 }}>
-          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.4)', marginBottom: 6, fontWeight: 500 }}>Description</label>
+          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 6, fontWeight: 600 }}>Description</label>
           <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={3}
-            style={{ width: '100%', background: 'rgba(242,235,220,0.05)', border: '1px solid rgba(242,235,220,0.1)', color: '#f2ebdc', padding: '10px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
+            style={{ width: '100%', background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.1)', color: '#1E1F21', padding: '10px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
         </div>
 
         <div style={{ marginBottom: 20 }}>
-          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.4)', marginBottom: 8, fontWeight: 500 }}>Product Images</label>
+          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 8, fontWeight: 600 }}>Product Images</label>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginBottom: 10 }}>
             {form.images.map((img, idx) => (
-              <div key={idx} style={{ position: 'relative', width: 64, height: 64, border: '1px solid rgba(242,235,220,0.1)' }}>
+              <div key={idx} style={{ position: 'relative', width: 64, height: 64, border: '1px solid rgba(30,31,33,0.1)' }}>
                 <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <button type="button" onClick={() => set('images', form.images.filter((_, i) => i !== idx))} style={{
-                  position: 'absolute', top: -4, right: -4, background: '#f87171', color: '#fff',
+                  position: 'absolute', top: -4, right: -4, background: '#991b1b', color: '#fff',
                   border: 'none', borderRadius: '50%', width: 16, height: 16, fontSize: 10, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1
                 }}>×</button>
               </div>
             ))}
             <label style={{
-              width: 64, height: 64, border: '1px dashed rgba(242,235,220,0.2)',
+              width: 64, height: 64, border: '1px dashed rgba(30,31,33,0.2)',
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', fontSize: 10, color: 'rgba(242,235,220,0.4)'
+              cursor: 'pointer', fontSize: 10, color: 'rgba(30,31,33,0.5)'
             }}>
               <span style={{ fontSize: 16, marginBottom: 2 }}>+</span>
               <span>Upload</span>
@@ -406,25 +412,27 @@ function EditProductModal({ product, categories, onClose, onSave, onDelete }) {
           </div>
         </div>
 
-        {categories.length > 0 && (
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.4)', marginBottom: 8, fontWeight: 500 }}>Categories</label>
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 8, fontWeight: 600 }}>Categories</label>
+          {categories && categories.length > 0 ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {categories.map(c => (
                 <button key={c.id} onClick={() => toggleCat(c.id)} style={{
                   padding: '5px 12px', fontSize: 10, letterSpacing: '0.1em',
                   fontFamily: "'Inter', sans-serif", cursor: 'pointer',
-                  background: form.categoryIds.includes(c.id) ? '#c8f542' : 'rgba(242,235,220,0.05)',
-                  color: form.categoryIds.includes(c.id) ? '#080808' : 'rgba(242,235,220,0.5)',
-                  border: form.categoryIds.includes(c.id) ? 'none' : '1px solid rgba(242,235,220,0.1)',
-                  transition: 'all 0.15s',
+                  background: form.categoryIds.includes(c.id) ? '#968574' : '#FAF9F6',
+                  color: form.categoryIds.includes(c.id) ? '#FAF9F6' : 'rgba(30,31,33,0.6)',
+                  border: form.categoryIds.includes(c.id) ? '1px solid #968574' : '1px solid rgba(30,31,33,0.2)',
+                  transition: 'all 0.15s', borderRadius: 4,
                 }}>{c.name}</button>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.5)', margin: 0 }}>No categories created yet. Add them in Settings.</p>
+          )}
+        </div>
 
-        {error && <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', padding: '10px 14px', fontSize: 12, color: '#f87171', marginBottom: 16 }}>{error}</div>}
+        {error && <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', padding: '10px 14px', fontSize: 12, color: '#991b1b', marginBottom: 16 }}>{error}</div>}
         <div style={{ display: 'flex', gap: 10 }}>
           <AdminBtn variant="primary" onClick={handleSave} disabled={saving} id="update-product-btn">{saving ? 'Saving...' : 'Update'}</AdminBtn>
           <AdminBtn variant="danger" onClick={handleDelete} disabled={deleting} id="delete-product-btn">{deleting ? 'Deleting...' : 'Delete'}</AdminBtn>
@@ -493,7 +501,7 @@ export default function ProductsSection() {
           placeholder="Search products by name or ID..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ background: 'rgba(242,235,220,0.04)', border: '1px solid rgba(242,235,220,0.1)', color: '#f2ebdc', padding: '9px 14px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 280 }}
+          style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.1)', color: '#1E1F21', padding: '9px 14px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 280, borderRadius: 4 }}
         />
       </div>
 
@@ -501,7 +509,7 @@ export default function ProductsSection() {
       {apiLoading && products.length === 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
           {[1, 2, 3, 4].map(i => (
-            <div key={i} style={{ background: 'rgba(242,235,220,0.02)', border: '1px solid rgba(242,235,220,0.07)', height: 280, animation: 'pulse 1.5s ease infinite' }} />
+            <div key={i} style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', height: 280, animation: 'pulse 1.5s ease infinite', borderRadius: 6 }} />
           ))}
         </div>
       )}
@@ -511,11 +519,11 @@ export default function ProductsSection() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
           {filtered.map(p => (
             <div key={p.id} style={{
-              background: 'rgba(242,235,220,0.02)', border: '1px solid rgba(242,235,220,0.07)',
-              overflow: 'hidden', transition: 'border-color 0.2s',
+              background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)',
+              overflow: 'hidden', transition: 'border-color 0.2s, box-shadow 0.2s', borderRadius: 6,
             }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(200,245,66,0.2)'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(242,235,220,0.07)'}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#968574'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(30,31,33,0.05)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(30,31,33,0.08)'; e.currentTarget.style.boxShadow = 'none'; }}
             >
               {/* Image area */}
               {(() => {
@@ -531,37 +539,37 @@ export default function ProductsSection() {
                 } catch {}
 
                 return (
-                  <div style={{ height: 140, background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ height: 140, background: '#FAF9F6', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(30,31,33,0.04)' }}>
                     {firstImg ? (
                       <img src={firstImg} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <span style={{ fontSize: 32, opacity: 0.2 }}>▦</span>
+                      <span style={{ fontSize: 32, opacity: 0.1, color: '#1E1F21' }}>▦</span>
                     )}
                     <span style={{
                       position: 'absolute', top: 10, right: 10,
-                      fontSize: 9, fontWeight: 600, letterSpacing: '0.1em',
-                      background: p.stockQuantity > 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
-                      color: p.stockQuantity > 0 ? '#4ade80' : '#f87171',
-                      padding: '3px 8px',
+                      fontSize: 9, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase',
+                      background: p.stockQuantity > 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                      color: p.stockQuantity > 0 ? '#16a34a' : '#dc2626',
+                      padding: '4px 8px', borderRadius: 4,
                     }}>{p.stockQuantity > 0 ? 'In Stock' : 'Out of Stock'}</span>
                   </div>
                 )
               })()}
               <div style={{ padding: '16px 18px' }}>
-                <p style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.3)', margin: '0 0 4px' }}>
+                <p style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.4)', margin: '0 0 4px', fontWeight: 500 }}>
                   ID: {p.id} {p.categories?.length > 0 && `· ${p.categories.map(c => c.name).join(', ')}`}
                 </p>
-                <p style={{ fontSize: 14, fontWeight: 500, color: '#f2ebdc', margin: '0 0 8px' }}>{p.name}</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#1E1F21', margin: '0 0 8px' }}>{p.name}</p>
                 {p.description && (
-                  <p style={{ fontSize: 11, color: 'rgba(242,235,220,0.4)', margin: '0 0 10px', fontWeight: 300, lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{p.description}</p>
+                  <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.5)', margin: '0 0 10px', fontWeight: 400, lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{p.description}</p>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                  <span style={{ fontSize: 18, fontFamily: "'Playfair Display', serif", fontWeight: 900, fontStyle: 'italic', color: '#c8f542' }}>₦{p.price}</span>
-                  <span style={{ fontSize: 11, color: 'rgba(242,235,220,0.4)' }}>Stock: {p.stockQuantity}</span>
+                  <span style={{ fontSize: 18, fontFamily: "'Playfair Display', serif", fontWeight: 900, fontStyle: 'italic', color: '#1E1F21' }}>₦{p.price}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(30,31,33,0.5)', fontWeight: 500 }}>Stock: {p.stockQuantity}</span>
                 </div>
                 {/* Variants summary */}
                 {p.variants?.length > 0 && (
-                  <p style={{ fontSize: 10, color: 'rgba(242,235,220,0.3)', margin: '0 0 12px' }}>{p.variants.length} variant{p.variants.length !== 1 ? 's' : ''}</p>
+                  <p style={{ fontSize: 10, color: 'rgba(30,31,33,0.4)', margin: '0 0 12px', fontWeight: 500 }}>{p.variants.length} variant{p.variants.length !== 1 ? 's' : ''}</p>
                 )}
                 <AdminBtn variant="ghost" onClick={() => setEditProduct(p)} id={`edit-product-${p.id}`}>Edit</AdminBtn>
               </div>
@@ -571,7 +579,7 @@ export default function ProductsSection() {
       ) : null}
 
       {!apiLoading && filtered.length === 0 && !apiError && (
-        <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(242,235,220,0.3)', fontSize: 13 }}>
+        <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(30,31,33,0.4)', fontSize: 13, fontWeight: 500 }}>
           {products.length === 0 ? 'No products yet. Add your first product.' : 'No products match your search.'}
         </div>
       )}

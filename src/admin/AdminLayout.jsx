@@ -44,9 +44,9 @@ export default function AdminLayout() {
     <div style={{
       display: 'flex',
       minHeight: '100vh',
-      background: '#2c2e35',
+      background: '#FAF9F6',
       fontFamily: "'Inter', sans-serif",
-      color: '#f2ebdc',
+      color: '#1E1F21',
     }}>
       <AdminSidebar />
 
@@ -59,29 +59,29 @@ export default function AdminLayout() {
           justifyContent: 'space-between',
           padding: '0 32px',
           height: 64,
-          borderBottom: '1px solid rgba(242,235,220,0.06)',
-          background: '#2c2e35',
+          borderBottom: '1px solid rgba(30,31,33,0.08)',
+          background: '#FAF9F6',
           position: 'sticky',
           top: 0,
           zIndex: 10,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 9, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.25)', fontWeight: 400 }}>MK 1974</span>
-            <span style={{ color: 'rgba(242,235,220,0.15)' }}>›</span>
-            <span style={{ fontSize: 9, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.5)', fontWeight: 500 }}>{activeSection}</span>
+            <span style={{ fontSize: 9, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.4)', fontWeight: 400 }}>MK 1974</span>
+            <span style={{ color: 'rgba(30,31,33,0.3)' }}>›</span>
+            <span style={{ fontSize: 9, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.6)', fontWeight: 500 }}>{activeSection}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             <a href="http://localhost:5173" target="_blank" rel="noopener noreferrer" style={{
-              fontSize: 9, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.3)',
+              fontSize: 9, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)',
               textDecoration: 'none', fontWeight: 500,
               transition: 'color 0.15s',
             }}
-              onMouseEnter={e => e.currentTarget.style.color = '#c8f542'}
-              onMouseLeave={e => e.currentTarget.style.color = 'rgba(242,235,220,0.3)'}
+              onMouseEnter={e => e.currentTarget.style.color = '#968574'}
+              onMouseLeave={e => e.currentTarget.style.color = 'rgba(30,31,33,0.5)'}
             >↗ Storefront</a>
-            <div style={{ width: 1, height: 16, background: 'rgba(242,235,220,0.1)' }} />
+            <div style={{ width: 1, height: 16, background: 'rgba(30,31,33,0.15)' }} />
             <div style={{ display: 'flex', items: 'center', gap: 8 }}>
-              <div style={{ width: 28, height: 28, background: 'rgba(200,245,66,0.15)', border: '1px solid rgba(200,245,66,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#c8f542' }}>
+              <div style={{ width: 28, height: 28, background: 'rgba(150,133,116,0.15)', border: '1px solid rgba(150,133,116,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#968574' }}>
                 {adminUser?.avatar}
               </div>
             </div>

@@ -28,8 +28,8 @@ export default function AdminSidebar() {
     <aside style={{
       width: sidebarCollapsed ? 68 : 240,
       minHeight: '100vh',
-      background: '#1f2127',
-      borderRight: '1px solid rgba(242,235,220,0.06)',
+      background: '#1E1F21',
+      borderRight: '1px solid rgba(250,249,246,0.06)',
       display: 'flex',
       flexDirection: 'column',
       transition: 'width 0.25s cubic-bezier(.4,0,.2,1)',
@@ -42,7 +42,7 @@ export default function AdminSidebar() {
       {/* Header */}
       <div style={{
         padding: sidebarCollapsed ? '20px 0' : '20px 20px',
-        borderBottom: '1px solid rgba(242,235,220,0.06)',
+        borderBottom: '1px solid rgba(250,249,246,0.06)',
         display: 'flex',
         alignItems: 'center',
         gap: 12,
@@ -51,25 +51,25 @@ export default function AdminSidebar() {
       }}>
         {!sidebarCollapsed && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, background: '#c8f542', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: 13, color: '#080808', fontStyle: 'italic' }}>MK</span>
+            <div style={{ width: 32, height: 32, background: '#968574', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: 13, color: '#FAF9F6', fontStyle: 'italic' }}>MK</span>
             </div>
             <div>
-              <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#c8f542', margin: 0, fontWeight: 500, lineHeight: 1.2 }}>1974</p>
-              <p style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.3)', margin: 0, fontWeight: 300, lineHeight: 1.2 }}>Admin</p>
+              <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#968574', margin: 0, fontWeight: 500, lineHeight: 1.2 }}>1974</p>
+              <p style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(250,249,246,0.3)', margin: 0, fontWeight: 300, lineHeight: 1.2 }}>Admin</p>
             </div>
           </div>
         )}
         {sidebarCollapsed && (
-          <div style={{ width: 32, height: 32, background: '#c8f542', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: 13, color: '#080808', fontStyle: 'italic' }}>MK</span>
+          <div style={{ width: 32, height: 32, background: '#968574', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: 13, color: '#FAF9F6', fontStyle: 'italic' }}>MK</span>
           </div>
         )}
         {!sidebarCollapsed && (
           <button
             id="sidebar-collapse-btn"
             onClick={() => setSidebarCollapsed(true)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(242,235,220,0.3)', fontSize: 16, padding: 4, lineHeight: 1 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(250,249,246,0.3)', fontSize: 16, padding: 4, lineHeight: 1 }}
           >‹</button>
         )}
       </div>
@@ -78,7 +78,7 @@ export default function AdminSidebar() {
       {sidebarCollapsed && (
         <button
           onClick={() => setSidebarCollapsed(false)}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(242,235,220,0.3)', fontSize: 16, padding: '8px 0', lineHeight: 1, textAlign: 'center' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(250,249,246,0.3)', fontSize: 16, padding: '8px 0', lineHeight: 1, textAlign: 'center' }}
         >›</button>
       )}
 
@@ -99,8 +99,8 @@ export default function AdminSidebar() {
                 gap: 12,
                 padding: sidebarCollapsed ? '11px 0' : '11px 20px',
                 justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
-                background: isActive ? 'rgba(200,245,66,0.08)' : 'none',
-                borderLeft: isActive ? '2px solid #c8f542' : '2px solid transparent',
+                background: isActive ? 'rgba(150,133,116,0.15)' : 'none',
+                borderLeft: isActive ? '2px solid #968574' : '2px solid transparent',
                 border: 'none',
                 cursor: 'pointer',
                 transition: 'all 0.15s',
@@ -108,20 +108,20 @@ export default function AdminSidebar() {
                 whiteSpace: 'nowrap',
                 position: 'relative',
               }}
-              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(242,235,220,0.03)' }}
+              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(250,249,246,0.03)' }}
               onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'none' }}
             >
-              <span style={{ fontSize: 14, color: isActive ? '#c8f542' : 'rgba(242,235,220,0.4)', flexShrink: 0, width: 18, textAlign: 'center' }}>
+              <span style={{ fontSize: 14, color: isActive ? '#968574' : 'rgba(250,249,246,0.4)', flexShrink: 0, width: 18, textAlign: 'center' }}>
                 {item.icon}
               </span>
               {!sidebarCollapsed && (
                 <>
-                  <span style={{ fontSize: 12, fontWeight: isActive ? 500 : 300, color: isActive ? '#f2ebdc' : 'rgba(242,235,220,0.5)', letterSpacing: '0.05em' }}>
+                  <span style={{ fontSize: 12, fontWeight: isActive ? 500 : 300, color: isActive ? '#FAF9F6' : 'rgba(250,249,246,0.5)', letterSpacing: '0.05em' }}>
                     {item.label}
                   </span>
                   {badge > 0 && (
                     <span style={{
-                      marginLeft: 'auto', background: '#c8f542', color: '#080808',
+                      marginLeft: 'auto', background: '#968574', color: '#FAF9F6',
                       fontSize: 9, fontWeight: 700, padding: '2px 6px',
                       borderRadius: 0, letterSpacing: '0.05em', minWidth: 18, textAlign: 'center',
                     }}>{badge}</span>
@@ -131,7 +131,7 @@ export default function AdminSidebar() {
               {sidebarCollapsed && badge > 0 && (
                 <span style={{
                   position: 'absolute', top: 6, right: 8,
-                  width: 8, height: 8, background: '#c8f542', borderRadius: '50%',
+                  width: 8, height: 8, background: '#968574', borderRadius: '50%',
                 }} />
               )}
             </button>
@@ -142,19 +142,19 @@ export default function AdminSidebar() {
       {/* User */}
       <div style={{
         padding: sidebarCollapsed ? '16px 0' : '16px 20px',
-        borderTop: '1px solid rgba(242,235,220,0.06)',
+        borderTop: '1px solid rgba(250,249,246,0.06)',
         display: 'flex',
         alignItems: 'center',
         gap: 12,
         justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
       }}>
-        <div style={{ width: 32, height: 32, background: 'rgba(200,245,66,0.15)', border: '1px solid rgba(200,245,66,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#c8f542', letterSpacing: '0.05em' }}>{adminUser?.avatar || 'MK'}</span>
+        <div style={{ width: 32, height: 32, background: 'rgba(150,133,116,0.15)', border: '1px solid rgba(150,133,116,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#968574', letterSpacing: '0.05em' }}>{adminUser?.avatar || 'MK'}</span>
         </div>
         {!sidebarCollapsed && (
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: 11, fontWeight: 500, color: '#f2ebdc', margin: 0, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{adminUser?.name}</p>
-            <p style={{ fontSize: 9, color: 'rgba(242,235,220,0.3)', margin: 0, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{adminUser?.role}</p>
+            <p style={{ fontSize: 11, fontWeight: 500, color: '#FAF9F6', margin: 0, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{adminUser?.name}</p>
+            <p style={{ fontSize: 9, color: 'rgba(250,249,246,0.3)', margin: 0, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{adminUser?.role}</p>
           </div>
         )}
         {!sidebarCollapsed && (
@@ -162,9 +162,9 @@ export default function AdminSidebar() {
             id="admin-logout-btn"
             onClick={adminLogout}
             title="Sign out"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(242,235,220,0.3)', fontSize: 14, padding: 4, flexShrink: 0 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(250,249,246,0.3)', fontSize: 14, padding: 4, flexShrink: 0 }}
             onMouseEnter={e => e.currentTarget.style.color = '#f87171'}
-            onMouseLeave={e => e.currentTarget.style.color = 'rgba(242,235,220,0.3)'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(250,249,246,0.3)'}
           >Sign Out</button>
         )}
       </div>
