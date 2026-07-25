@@ -1,5 +1,5 @@
 // ─── MK Brand API Client ───────────────────────────────────────────────────────
-const BASE_URL = ''
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 // Store the JWT token in memory (backed by localStorage)
 let _token = localStorage.getItem('mk1974_admin_token') || null
@@ -69,4 +69,17 @@ export const sizes = {
   getAll: () => request('GET', '/api/Size'),
   create: (body) => request('POST', '/api/Size', body),
   remove: (id)   => request('DELETE', `/api/Size/${id}`),
+}
+
+// ─── Customers ────────────────────────────────────────────────────────────────
+export const customers = {
+  getAll: () => request('GET', '/api/User'),
+  getOne: (id) => request('GET', `/api/User/${id}`),
+}
+
+// ─── Orders ───────────────────────────────────────────────────────────────────
+export const orders = {
+  getAll: () => request('GET', '/api/Order'),
+  getOne: (id) => request('GET', `/api/Order/${id}`),
+  updateStatus: (id, status) => request('PUT', `/api/Order/${id}/status`, status),
 }
