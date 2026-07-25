@@ -18,19 +18,33 @@ async function request(method, path, body) {
   const headers = { 'Content-Type': 'application/json' }
   if (_token) headers['Authorization'] = `Bearer ${_token}`
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  })
+  let res;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    })
+  } catch (err) {
+    throw new Error('Network error: Unable to connect to server. ' + err.message)
+  }
 
   if (!res.ok) {
     let msg = `HTTP ${res.status}`
-    try { const d = await res.json(); msg = d.message || d.title || msg } catch {}
+    try {
+      const text = await res.text()
+      if (text) {
+        try {
+          const d = JSON.parse(text)
+          msg = d.message || d.title || d.error || (Array.isArray(d.errors) ? d.errors.join(', ') : msg)
+        } catch {
+          msg = text
+        }
+      }
+    } catch {}
     throw new Error(msg)
   }
 
-  // Some DELETE endpoints return 200 with no body
   const text = await res.text()
   return text ? JSON.parse(text) : null
 }
