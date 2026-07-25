@@ -6,13 +6,13 @@ function Toggle({ id, defaultChecked }) {
   const [on, setOn] = useState(defaultChecked)
   return (
     <button id={id} onClick={() => setOn(o => !o)} style={{
-      width: 44, height: 24, borderRadius: 12, background: on ? '#968574' : 'rgba(30,31,33,0.12)',
+      width: 44, height: 24, borderRadius: 12, background: on ? '#968574' : 'rgba(30,31,33,0.15)',
       border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.2s', flexShrink: 0,
     }}>
       <span style={{
         position: 'absolute', top: 3, left: on ? 23 : 3, width: 18, height: 18,
-        borderRadius: '50%', background: on ? '#FAF9F6' : 'rgba(30,31,33,0.5)',
-        transition: 'left 0.2s', display: 'block',
+        borderRadius: '50%', background: '#FAF9F6',
+        transition: 'left 0.2s', display: 'block', boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
       }} />
     </button>
   )
@@ -20,10 +20,10 @@ function Toggle({ id, defaultChecked }) {
 
 function SettingRow({ label, desc, children }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 0', borderBottom: '1px solid #FAF9F6' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 0', borderBottom: '1px solid rgba(30,31,33,0.06)' }}>
       <div style={{ flex: 1, maxWidth: '60%' }}>
-        <p style={{ fontSize: 12, fontWeight: 400, color: '#1E1F21', margin: '0 0 3px' }}>{label}</p>
-        {desc && <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.5)', margin: 0, fontWeight: 300 }}>{desc}</p>}
+        <p style={{ fontSize: 13, fontWeight: 600, color: '#1E1F21', margin: '0 0 3px' }}>{label}</p>
+        {desc && <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.5)', margin: 0, fontWeight: 400 }}>{desc}</p>}
       </div>
       {children}
     </div>
@@ -47,25 +47,25 @@ function CategoriesManager() {
 
   return (
     <div>
-      <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '0 0 16px', fontWeight: 500 }}>Product Categories</p>
-      <div style={{ display: 'flex', gap: 10, marginBottom: 12, alignItems: 'flex-end' }}>
-        <input placeholder="e.g. Dresses" value={name} onChange={e => { setName(e.target.value); setError('') }}
+      <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#968574', margin: '0 0 16px', fontWeight: 700 }}>Store Categories</p>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'flex-end' }}>
+        <input placeholder="e.g. Streetwear" value={name} onChange={e => { setName(e.target.value); setError('') }}
           onKeyDown={e => e.key === 'Enter' && handleCreate()}
-          style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.15)', color: '#1E1F21', padding: '8px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 180 }} />
-        <AdminBtn variant="primary" onClick={handleCreate} disabled={saving} id="create-category-btn">{saving ? '…' : '+ Add'}</AdminBtn>
+          style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.12)', color: '#1E1F21', padding: '10px 14px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 220, borderRadius: 4 }} />
+        <AdminBtn variant="secondary" onClick={handleCreate} disabled={saving} id="create-category-btn">{saving ? '...' : '+ Add Category'}</AdminBtn>
       </div>
-      {error && <p style={{ fontSize: 11, color: '#991b1b', margin: '0 0 12px' }}>{error}</p>}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+      {error && <p style={{ fontSize: 11, color: '#dc2626', margin: '0 0 12px' }}>{error}</p>}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         {categories.map(c => (
-          <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.1)', padding: '6px 12px' }}>
-            <span style={{ fontSize: 12, color: '#1E1F21', fontWeight: 500, textAlign: 'center' }}>{c.name}</span>
-            <button onClick={() => deleteCategory(c.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(30,31,33,0.3)', fontSize: 14, lineHeight: 1 }}
-              onMouseEnter={e => e.currentTarget.style.color = '#991b1b'}
-              onMouseLeave={e => e.currentTarget.style.color = 'rgba(30,31,33,0.3)'}
+          <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.1)', padding: '6px 14px', borderRadius: 4 }}>
+            <span style={{ fontSize: 12, color: '#1E1F21', fontWeight: 600 }}>{c.name}</span>
+            <button onClick={() => deleteCategory(c.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(30,31,33,0.4)', fontSize: 16, lineHeight: 1 }}
+              onMouseEnter={e => e.currentTarget.style.color = '#dc2626'}
+              onMouseLeave={e => e.currentTarget.style.color = 'rgba(30,31,33,0.4)'}
             >×</button>
           </div>
         ))}
-        {categories.length === 0 && <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.4)' }}>No categories yet.</p>}
+        {categories.length === 0 && <p style={{ fontSize: 12, color: 'rgba(30,31,33,0.5)' }}>No categories configured.</p>}
       </div>
     </div>
   )
@@ -88,38 +88,38 @@ function ColorsManager() {
 
   return (
     <div>
-      <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '0 0 16px', fontWeight: 500 }}>Product Colors</p>
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+      <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#968574', margin: '0 0 16px', fontWeight: 700 }}>Apparel Colors</p>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 18, flexWrap: 'wrap', alignItems: 'flex-end' }}>
         <div>
-          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 5 }}>Name</label>
-          <input placeholder="e.g. Midnight Black" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-            style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.15)', color: '#1E1F21', padding: '8px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 180 }} />
+          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 5, fontWeight: 600 }}>Color Name</label>
+          <input placeholder="e.g. Volt Green" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+            style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.12)', color: '#1E1F21', padding: '10px 14px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 200, borderRadius: 4 }} />
         </div>
         <div>
-          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 5 }}>Hex</label>
-          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 5, fontWeight: 600 }}>Hex Code</label>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <input type="color" value={form.hexCode} onChange={e => setForm(f => ({ ...f, hexCode: e.target.value }))}
-              style={{ width: 36, height: 36, border: '1px solid rgba(30,31,33,0.15)', background: 'none', cursor: 'pointer', padding: 2 }} />
+              style={{ width: 40, height: 40, border: '1px solid rgba(30,31,33,0.15)', background: 'none', cursor: 'pointer', padding: 2, borderRadius: 4 }} />
             <input value={form.hexCode} onChange={e => setForm(f => ({ ...f, hexCode: e.target.value }))}
-              style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.15)', color: '#1E1F21', padding: '8px 10px', fontSize: 11, fontFamily: 'monospace', outline: 'none', width: 90 }} />
+              style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.12)', color: '#1E1F21', padding: '10px 12px', fontSize: 12, fontFamily: 'monospace', outline: 'none', width: 100, borderRadius: 4 }} />
           </div>
         </div>
-        <AdminBtn variant="primary" onClick={handleCreate} disabled={saving} id="create-color-btn">{saving ? '…' : '+ Add'}</AdminBtn>
+        <AdminBtn variant="secondary" onClick={handleCreate} disabled={saving} id="create-color-btn">{saving ? '...' : '+ Add Color'}</AdminBtn>
       </div>
-      {error && <p style={{ fontSize: 11, color: '#991b1b', margin: '0 0 12px' }}>{error}</p>}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+      {error && <p style={{ fontSize: 11, color: '#dc2626', margin: '0 0 12px' }}>{error}</p>}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         {colors.map(c => (
-          <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.1)', padding: '6px 12px' }}>
-            <div style={{ width: 14, height: 14, background: c.hexCode, border: '1px solid rgba(30,31,33,0.3)', borderRadius: '50%', flexShrink: 0 }} />
-            <span style={{ fontSize: 11, color: 'rgba(30,31,33,0.8)' }}>{c.name}</span>
-            <span style={{ fontSize: 10, color: 'rgba(30,31,33,0.4)', fontFamily: 'monospace' }}>{c.hexCode}</span>
-            <button onClick={() => deleteColor(c.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(30,31,33,0.3)', fontSize: 14, padding: '0 0 0 4px', lineHeight: 1 }}
-              onMouseEnter={e => e.currentTarget.style.color = '#991b1b'}
-              onMouseLeave={e => e.currentTarget.style.color = 'rgba(30,31,33,0.3)'}
+          <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.1)', padding: '6px 14px', borderRadius: 4 }}>
+            <div style={{ width: 16, height: 16, background: c.hexCode, border: '1px solid rgba(30,31,33,0.2)', borderRadius: '50%', flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: '#1E1F21', fontWeight: 600 }}>{c.name}</span>
+            <span style={{ fontSize: 11, color: 'rgba(30,31,33,0.5)', fontFamily: 'monospace' }}>{c.hexCode}</span>
+            <button onClick={() => deleteColor(c.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(30,31,33,0.4)', fontSize: 16, lineHeight: 1 }}
+              onMouseEnter={e => e.currentTarget.style.color = '#dc2626'}
+              onMouseLeave={e => e.currentTarget.style.color = 'rgba(30,31,33,0.4)'}
             >×</button>
           </div>
         ))}
-        {colors.length === 0 && <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.4)' }}>No colors yet.</p>}
+        {colors.length === 0 && <p style={{ fontSize: 12, color: 'rgba(30,31,33,0.5)' }}>No colors configured.</p>}
       </div>
     </div>
   )
@@ -142,31 +142,31 @@ function SizesManager() {
 
   return (
     <div>
-      <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '0 0 16px', fontWeight: 500 }}>Product Sizes</p>
-      <div style={{ display: 'flex', gap: 10, marginBottom: 12, alignItems: 'flex-end' }}>
-        <input placeholder="e.g. XL" value={name} onChange={e => { setName(e.target.value); setError('') }}
+      <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#968574', margin: '0 0 16px', fontWeight: 700 }}>Apparel Sizes</p>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'flex-end' }}>
+        <input placeholder="e.g. XXL" value={name} onChange={e => { setName(e.target.value); setError('') }}
           onKeyDown={e => e.key === 'Enter' && handleCreate()}
-          style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.15)', color: '#1E1F21', padding: '8px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 140 }} />
-        <AdminBtn variant="primary" onClick={handleCreate} disabled={saving} id="create-size-btn">{saving ? '…' : '+ Add'}</AdminBtn>
+          style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.12)', color: '#1E1F21', padding: '10px 14px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 160, borderRadius: 4 }} />
+        <AdminBtn variant="secondary" onClick={handleCreate} disabled={saving} id="create-size-btn">{saving ? '...' : '+ Add Size'}</AdminBtn>
       </div>
-      {error && <p style={{ fontSize: 11, color: '#991b1b', margin: '0 0 12px' }}>{error}</p>}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+      {error && <p style={{ fontSize: 11, color: '#dc2626', margin: '0 0 12px' }}>{error}</p>}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         {sizes.map(s => (
-          <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.1)', padding: '6px 12px' }}>
-            <span style={{ fontSize: 12, color: '#1E1F21', fontWeight: 500, minWidth: 24, textAlign: 'center' }}>{s.name}</span>
-            <button onClick={() => deleteSize(s.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(30,31,33,0.3)', fontSize: 14, lineHeight: 1 }}
-              onMouseEnter={e => e.currentTarget.style.color = '#991b1b'}
-              onMouseLeave={e => e.currentTarget.style.color = 'rgba(30,31,33,0.3)'}
+          <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.1)', padding: '6px 14px', borderRadius: 4 }}>
+            <span style={{ fontSize: 12, color: '#1E1F21', fontWeight: 700, minWidth: 24, textAlign: 'center' }}>{s.name}</span>
+            <button onClick={() => deleteSize(s.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(30,31,33,0.4)', fontSize: 16, lineHeight: 1 }}
+              onMouseEnter={e => e.currentTarget.style.color = '#dc2626'}
+              onMouseLeave={e => e.currentTarget.style.color = 'rgba(30,31,33,0.4)'}
             >×</button>
           </div>
         ))}
-        {sizes.length === 0 && <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.4)' }}>No sizes yet.</p>}
+        {sizes.length === 0 && <p style={{ fontSize: 12, color: 'rgba(30,31,33,0.5)' }}>No sizes configured.</p>}
       </div>
     </div>
   )
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+// ─── Settings Main Component ──────────────────────────────────────────────────
 export default function SettingsSection() {
   const { adminUser, adminLogout } = useAdmin()
   const [activeTab, setActiveTab] = useState('general')
@@ -174,79 +174,77 @@ export default function SettingsSection() {
   const tabs = ['general', 'store', 'catalogue', 'notifications', 'security', 'api']
 
   return (
-    <div>
-      <SectionHeader title="Settings" sub="Configure your MK 1974 admin panel" />
+    <div className="animate-fade-in">
+      <SectionHeader title="Control Panel Settings" sub="Configure storefront preferences, catalogue properties, and API integration" />
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 2, marginBottom: 32, borderBottom: '1px solid rgba(30,31,33,0.08)', paddingBottom: 0, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 28, borderBottom: '1px solid rgba(30,31,33,0.08)', flexWrap: 'wrap' }}>
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)} style={{
-            padding: '10px 20px', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase',
-            fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+            padding: '12px 24px', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase',
+            fontWeight: 700, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
             background: 'none', border: 'none', borderBottom: activeTab === t ? '2px solid #968574' : '2px solid transparent',
             color: activeTab === t ? '#968574' : 'rgba(30,31,33,0.5)',
-            transition: 'all 0.15s', marginBottom: -1,
+            transition: 'all 0.2s', marginBottom: -1,
           }}>{t}</button>
         ))}
       </div>
 
       {activeTab === 'general' && (
-        <div style={{ maxWidth: 720 }}>
-          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: '4px 28px 24px', marginBottom: 20 }}>
-            <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#1E1F21', margin: '24px 0 0', fontWeight: 500 }}>Admin Profile</p>
-            <SettingRow label="Display Name" desc="Your name shown in the admin panel">
-              <input defaultValue={adminUser?.name} style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.15)', color: '#1E1F21', padding: '8px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 220 }} />
+        <div style={{ maxWidth: 740 }}>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: '8px 32px 28px', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.02)', marginBottom: 20 }}>
+            <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#968574', margin: '24px 0 0', fontWeight: 700 }}>Admin Profile</p>
+            <SettingRow label="Display Name" desc="Your administrator account name">
+              <input defaultValue={adminUser?.name} style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.12)', color: '#1E1F21', padding: '10px 14px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 240, borderRadius: 4 }} />
             </SettingRow>
-            <SettingRow label="Email Address" desc="Your admin login email">
-              <input defaultValue={adminUser?.email} style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.15)', color: '#1E1F21', padding: '8px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 220 }} />
+            <SettingRow label="Email Address" desc="Primary admin login email">
+              <input defaultValue={adminUser?.email} style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.12)', color: '#1E1F21', padding: '10px 14px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 240, borderRadius: 4 }} />
             </SettingRow>
-            <SettingRow label="Role" desc="Your permission level">
-              <span style={{ fontSize: 11, color: '#968574', fontWeight: 500 }}>{adminUser?.role}</span>
+            <SettingRow label="Role Assignment" desc="Current administrative privileges">
+              <span style={{ fontSize: 12, color: '#968574', fontWeight: 700 }}>{adminUser?.role}</span>
             </SettingRow>
           </div>
-          <AdminBtn variant="primary" id="save-general-settings">Save Changes</AdminBtn>
+          <AdminBtn variant="secondary" id="save-general-settings">Save Profile Settings</AdminBtn>
         </div>
       )}
 
       {activeTab === 'store' && (
-        <div style={{ maxWidth: 720 }}>
-          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: '4px 28px 24px', marginBottom: 20 }}>
-            <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '24px 0 0', fontWeight: 500 }}>Store Configuration</p>
-            <SettingRow label="Store Name" desc="Public-facing brand name"><input defaultValue="MK 1974" style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.15)', color: '#1E1F21', padding: '8px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 200 }} /></SettingRow>
-            <SettingRow label="Currency" desc="Primary store currency"><input defaultValue="GBP (₦)" style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.15)', color: '#1E1F21', padding: '8px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 200 }} /></SettingRow>
-            <SettingRow label="Free Shipping Threshold" desc="Minimum order for free UK shipping"><input defaultValue="₦75" style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.15)', color: '#1E1F21', padding: '8px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 200 }} /></SettingRow>
-            <SettingRow label="Maintenance Mode" desc="Take the storefront offline temporarily"><Toggle id="maintenance-toggle" defaultChecked={false} /></SettingRow>
-            <SettingRow label="Allow Guest Checkout" desc="Let customers buy without an account"><Toggle id="guest-checkout-toggle" defaultChecked={true} /></SettingRow>
+        <div style={{ maxWidth: 740 }}>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: '8px 32px 28px', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.02)', marginBottom: 20 }}>
+            <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#968574', margin: '24px 0 0', fontWeight: 700 }}>Store Defaults</p>
+            <SettingRow label="Store Name" desc="Public brand identifier"><input defaultValue="MK 1974" style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.12)', color: '#1E1F21', padding: '10px 14px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 220, borderRadius: 4 }} /></SettingRow>
+            <SettingRow label="Primary Currency" desc="Storefront checkout currency"><input defaultValue="NGN (₦)" style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.12)', color: '#1E1F21', padding: '10px 14px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 220, borderRadius: 4 }} /></SettingRow>
+            <SettingRow label="Free Shipping Threshold" desc="Minimum cart amount for free delivery"><input defaultValue="₦75,000" style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.12)', color: '#1E1F21', padding: '10px 14px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 220, borderRadius: 4 }} /></SettingRow>
+            <SettingRow label="Maintenance Mode" desc="Temporarily display maintenance page"><Toggle id="maintenance-toggle" defaultChecked={false} /></SettingRow>
+            <SettingRow label="Allow Guest Checkout" desc="Permit checkout without customer login"><Toggle id="guest-checkout-toggle" defaultChecked={true} /></SettingRow>
           </div>
-          <AdminBtn variant="primary" id="save-store-settings">Save Changes</AdminBtn>
+          <AdminBtn variant="secondary" id="save-store-settings">Save Store Preferences</AdminBtn>
         </div>
       )}
 
       {activeTab === 'catalogue' && (
-        <div style={{ maxWidth: 760 }}>
-          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: 28, marginBottom: 20 }}>
+        <div style={{ maxWidth: 800 }}>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: 32, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.02)', marginBottom: 20 }}>
             <CategoriesManager />
           </div>
-          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: 28, marginBottom: 20 }}>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: 32, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.02)', marginBottom: 20 }}>
             <ColorsManager />
           </div>
-          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: 28 }}>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: 32, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
             <SizesManager />
           </div>
         </div>
       )}
 
       {activeTab === 'notifications' && (
-        <div style={{ maxWidth: 720 }}>
-          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: '4px 28px 24px' }}>
-            <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '24px 0 0', fontWeight: 500 }}>Email Notifications</p>
+        <div style={{ maxWidth: 740 }}>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: '8px 32px 28px', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+            <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#968574', margin: '24px 0 0', fontWeight: 700 }}>Notification Triggers</p>
             {[
-              { label: 'New order placed', desc: 'Alert when a customer places an order', id: 'notif-new-order', default: true },
-              { label: 'Payment received', desc: 'Alert on successful payment confirmation', id: 'notif-payment', default: true },
-              { label: 'Low stock alert', desc: 'Alert when product stock drops below 10', id: 'notif-low-stock', default: true },
-              { label: 'New review submitted', desc: 'Alert when a customer submits a review', id: 'notif-review', default: false },
-              { label: 'New customer signup', desc: 'Alert when a new account is created', id: 'notif-signup', default: false },
-              { label: 'Daily sales report', desc: 'Receive a daily summary email at 8am', id: 'notif-daily', default: true },
+              { label: 'New order placed', desc: 'Instant email alert when a new customer order is placed', id: 'notif-new-order', default: true },
+              { label: 'Payment confirmed', desc: 'Alert upon successful order payment authorization', id: 'notif-payment', default: true },
+              { label: 'Low stock warning', desc: 'Alert when any product inventory drops below 10 units', id: 'notif-low-stock', default: true },
+              { label: 'New customer registration', desc: 'Alert when a new customer signs up for an account', id: 'notif-signup', default: false },
             ].map(n => (
               <SettingRow key={n.id} label={n.label} desc={n.desc}>
                 <Toggle id={n.id} defaultChecked={n.default} />
@@ -257,42 +255,40 @@ export default function SettingsSection() {
       )}
 
       {activeTab === 'security' && (
-        <div style={{ maxWidth: 720 }}>
-          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: '4px 28px 24px', marginBottom: 20 }}>
-            <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '24px 0 0', fontWeight: 500 }}>Security Settings</p>
-            <SettingRow label="Two-Factor Authentication" desc="Require 2FA for all admin logins"><Toggle id="2fa-toggle" defaultChecked={false} /></SettingRow>
-            <SettingRow label="Session Timeout" desc="Auto-logout after inactivity">
-              <select style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.15)', color: '#1E1F21', padding: '8px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none' }}>
+        <div style={{ maxWidth: 740 }}>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: '8px 32px 28px', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.02)', marginBottom: 20 }}>
+            <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#968574', margin: '24px 0 0', fontWeight: 700 }}>Security & Authentication</p>
+            <SettingRow label="Two-Factor Authentication (2FA)" desc="Enforce 2FA verification code on sign-in"><Toggle id="2fa-toggle" defaultChecked={false} /></SettingRow>
+            <SettingRow label="Session Auto-Timeout" desc="Automatically require login after inactivity">
+              <select style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.12)', color: '#1E1F21', padding: '10px 14px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', borderRadius: 4 }}>
                 <option>30 minutes</option>
                 <option>1 hour</option>
                 <option>8 hours</option>
                 <option>Never</option>
               </select>
             </SettingRow>
-            <SettingRow label="Login Attempt Limit" desc="Block after failed attempts"><Toggle id="login-limit-toggle" defaultChecked={true} /></SettingRow>
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
-            <AdminBtn variant="primary" id="change-password-btn">Change Password</AdminBtn>
+            <AdminBtn variant="secondary" id="change-password-btn">Change Password</AdminBtn>
             <AdminBtn variant="danger" onClick={adminLogout} id="security-logout-btn">Sign Out</AdminBtn>
           </div>
         </div>
       )}
 
       {activeTab === 'api' && (
-        <div style={{ maxWidth: 720 }}>
-          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: 28 }}>
-            <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '0 0 20px', fontWeight: 500 }}>API Configuration</p>
+        <div style={{ maxWidth: 740 }}>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: 32, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+            <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#968574', margin: '0 0 20px', fontWeight: 700 }}>Live Backend API Configuration</p>
             {[
-              { label: 'API Base URL', value: 'https://mk-brand-api.onrender.com' },
-              { label: 'Swagger Docs', value: 'https://mk-brand-api.onrender.com/swagger/index.html' },
-              { label: 'OpenAPI Spec', value: 'https://mk-brand-api.onrender.com/swagger/v1/swagger.json' },
+              { label: 'API Target URL', value: 'https://mk-brand-api.onrender.com' },
+              { label: 'Swagger Documentation', value: 'https://mk-brand-api.onrender.com/swagger/index.html' },
+              { label: 'OpenAPI v1 Schema', value: 'https://mk-brand-api.onrender.com/swagger/v1/swagger.json' },
             ].map(({ label, value }) => (
-              <div key={label} style={{ marginBottom: 18 }}>
-                <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 6, fontWeight: 500 }}>{label}</label>
+              <div key={label} style={{ marginBottom: 20 }}>
+                <label style={{ display: 'block', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', marginBottom: 6, fontWeight: 600 }}>{label}</label>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                  <input readOnly defaultValue={value} style={{ flex: 1, background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.15)', color: '#1E1F21', padding: '10px 14px', fontSize: 11, fontFamily: 'monospace', outline: 'none', boxSizing: 'border-box' }} />
-                  <a href={value.startsWith('http') ? value : '#'} target="_blank" rel="noopener noreferrer"
-                    style={{ fontSize: 10, color: '#968574', textDecoration: 'none', letterSpacing: '0.1em', whiteSpace: 'nowrap' }}>↗ Open</a>
+                  <input readOnly defaultValue={value} style={{ flex: 1, background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.12)', color: '#1E1F21', padding: '10px 14px', fontSize: 11, fontFamily: 'monospace', outline: 'none', borderRadius: 4 }} />
+                  <a href={value} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: '#968574', fontWeight: 700, textDecoration: 'none', textTransform: 'uppercase' }}>↗ Open</a>
                 </div>
               </div>
             ))}
