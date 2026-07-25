@@ -30,6 +30,47 @@ function SettingRow({ label, desc, children }) {
   )
 }
 
+// ─── Categories Manager ───────────────────────────────────────────────────────
+function CategoriesManager() {
+  const { categories, createCategory, deleteCategory } = useAdmin()
+  const [name, setName] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleCreate = async () => {
+    if (!name.trim()) { setError('Name required'); return }
+    setSaving(true); setError('')
+    try { await createCategory({ name: name.trim() }); setName('') }
+    catch (err) { setError(err.message) }
+    finally { setSaving(false) }
+  }
+
+  return (
+    <div>
+      <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '0 0 16px', fontWeight: 500 }}>Product Categories</p>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 12, alignItems: 'flex-end' }}>
+        <input placeholder="e.g. Dresses" value={name} onChange={e => { setName(e.target.value); setError('') }}
+          onKeyDown={e => e.key === 'Enter' && handleCreate()}
+          style={{ background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.15)', color: '#1E1F21', padding: '8px 12px', fontSize: 12, fontFamily: "'Inter', sans-serif", outline: 'none', width: 180 }} />
+        <AdminBtn variant="primary" onClick={handleCreate} disabled={saving} id="create-category-btn">{saving ? '…' : '+ Add'}</AdminBtn>
+      </div>
+      {error && <p style={{ fontSize: 11, color: '#991b1b', margin: '0 0 12px' }}>{error}</p>}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        {categories.map(c => (
+          <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.1)', padding: '6px 12px' }}>
+            <span style={{ fontSize: 12, color: '#1E1F21', fontWeight: 500, textAlign: 'center' }}>{c.name}</span>
+            <button onClick={() => deleteCategory(c.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(30,31,33,0.3)', fontSize: 14, lineHeight: 1 }}
+              onMouseEnter={e => e.currentTarget.style.color = '#991b1b'}
+              onMouseLeave={e => e.currentTarget.style.color = 'rgba(30,31,33,0.3)'}
+            >×</button>
+          </div>
+        ))}
+        {categories.length === 0 && <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.4)' }}>No categories yet.</p>}
+      </div>
+    </div>
+  )
+}
+
 // ─── Colors Manager ───────────────────────────────────────────────────────────
 function ColorsManager() {
   const { colors, createColor, deleteColor } = useAdmin()
@@ -183,6 +224,9 @@ export default function SettingsSection() {
 
       {activeTab === 'catalogue' && (
         <div style={{ maxWidth: 760 }}>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: 28, marginBottom: 20 }}>
+            <CategoriesManager />
+          </div>
           <div style={{ background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', padding: 28, marginBottom: 20 }}>
             <ColorsManager />
           </div>
