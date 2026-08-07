@@ -2,6 +2,65 @@ import { useState, useMemo } from 'react'
 import { useAdmin } from '../context/AdminContext'
 import { SectionHeader, AdminBtn } from './DashboardOverview'
 
+const API_BASE_URL = 'https://mk-brand-api.onrender.com'
+
+function formatSingleImageUrl(url) {
+  if (!url) return null
+  if (typeof url !== 'string') {
+    if (typeof url === 'object' && url !== null) {
+      url = url.url || url.imageUrl || url.imagePath || url.path || url.src || null
+    }
+  }
+  if (!url || typeof url !== 'string') return null
+  const trimmed = url.trim()
+  if (!trimmed) return null
+  if (trimmed.startsWith('data:') || trimmed.startsWith('blob:') || trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed
+  }
+  const cleanPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`
+  return `${API_BASE_URL}${cleanPath}`
+}
+
+function resolveFirstProductImage(p) {
+  if (!p) return null
+
+  const singleProps = [
+    p.imageUrl, p.image, p.primaryImageUrl, p.thumbnail, p.coverImage, p.photoUrl,
+    p.ImageUrl, p.Image, p.PrimaryImageUrl
+  ]
+  for (const item of singleProps) {
+    const formatted = formatSingleImageUrl(item)
+    if (formatted) return formatted
+  }
+
+  const arrayProps = [p.images, p.imageUrls, p.Images, p.ImageUrls]
+  for (const arr of arrayProps) {
+    if (Array.isArray(arr) && arr.length > 0) {
+      const primary = arr.find(img => img && (img.isPrimary || img.IsPrimary)) || arr[0]
+      const formatted = formatSingleImageUrl(primary)
+      if (formatted) return formatted
+    }
+  }
+
+  try {
+    const pId = p.productId ?? p.id
+    if (pId) {
+      const storedImgs = localStorage.getItem(`mk_prod_images_${pId}`)
+      if (storedImgs) {
+        const parsed = JSON.parse(storedImgs)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const formatted = formatSingleImageUrl(parsed[0])
+          if (formatted) return formatted
+        }
+      }
+    }
+  } catch (e) {
+    console.error(e)
+  }
+
+  return null
+}
+
 // ─── Add / Edit Product Modal ──────────────────────────────────────────────────
 function AddProductModal({ onClose, categories, colors = [], sizes = [], onSave, productToEdit }) {
   const [form, setForm] = useState({
@@ -556,22 +615,7 @@ export default function ProductsSection() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: 20 }}>
               {filtered.map(p => {
-                let firstImg = null
-                if (Array.isArray(p.images) && p.images.length > 0) {
-                  const primary = p.images.find(img => img.isPrimary) || p.images[0]
-                  firstImg = primary?.url || primary?.imageUrl || primary
-                  if (typeof firstImg !== 'string') firstImg = null
-                }
-                if (!firstImg) {
-                  try {
-                    const stored = localStorage.getItem(`mk_prod_images_${p.id}`)
-                    if (stored) {
-                      const parsed = JSON.parse(stored)
-                      if (Array.isArray(parsed) && parsed.length > 0) firstImg = parsed[0]
-                    }
-                  } catch {}
-                }
-
+                const firstImg = resolveFirstProductImage(p)
                 const catName = p.categories?.[0]?.name || p.category || (categories.find(c => String(c.id) === String(p.categoryId))?.name) || 'Apparel'
 
                 return (
