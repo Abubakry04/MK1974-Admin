@@ -1,59 +1,107 @@
 import { useAdmin } from '../context/AdminContext'
 import { SectionHeader, StatusBadge, AdminBtn, StatCard } from './DashboardOverview'
 
-function Stars({ rating }) {
+function StarRating({ rating }) {
   return (
-    <span>
+    <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
       {[1, 2, 3, 4, 5].map(i => (
-        <span key={i} style={{ color: i <= rating ? '#c8f542' : 'rgba(242,235,220,0.15)', fontSize: 12 }}>★</span>
+        <svg
+          key={i}
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill={i <= rating ? '#F59E0B' : 'none'}
+          stroke={i <= rating ? '#F59E0B' : 'var(--border-strong)'}
+          strokeWidth="1.5"
+        >
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
       ))}
-    </span>
+    </div>
   )
 }
 
 export default function ReviewsSection() {
-  const { reviews, approveReview, deleteReview, stats } = useAdmin()
+  const { reviews = [], approveReview, deleteReview } = useAdmin()
 
-  const avgRating = (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+  const avgRating = reviews.length > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : '0.0'
   const pending = reviews.filter(r => r.status === 'pending')
   const approved = reviews.filter(r => r.status === 'approved')
 
   return (
-    <div>
-      <SectionHeader title="Reviews" sub={`${reviews.length} reviews · ${stats.pendingReviews} awaiting moderation`} />
+    <div className="animate-fade-in">
+      <SectionHeader
+        title="Customer Reviews"
+        sub={`${reviews.length} total customer feedback entries · ${pending.length} pending moderation`}
+      />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 32 }}>
-        <StatCard label="Total Reviews" value={reviews.length} icon="★" />
-        <StatCard label="Avg. Rating" value={`${avgRating}★`} accent="#c8f542" icon="★" />
-        <StatCard label="Pending" value={pending.length} accent="#fbbf24" icon="⏳" />
-        <StatCard label="Approved" value={approved.length} accent="#4ade80" icon="✓" />
+      {/* Stat Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 28 }}>
+        <StatCard label="Total Reviews"       value={reviews.length} />
+        <StatCard label="Awaiting Moderation" value={pending.length} accent={pending.length > 0 ? "var(--warning)" : "var(--text-primary)"} />
+        <StatCard label="Approved Reviews"   value={approved.length} accent="var(--success)" />
+        <StatCard label="Average Rating"     value={avgRating} accent="var(--accent)" />
       </div>
 
-      {/* Pending reviews first */}
+      {reviews.length === 0 && (
+        <div style={{
+          padding: '48px 20px',
+          textAlign: 'center',
+          color: 'var(--text-secondary)',
+          fontSize: 13,
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius-lg)',
+        }}>
+          Notice: No customer product reviews submitted yet. Live API synced.
+        </div>
+      )}
+
+      {/* Pending Reviews Moderation Queue */}
       {pending.length > 0 && (
         <div style={{ marginBottom: 32 }}>
-          <p style={{ fontSize: 9, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#fbbf24', margin: '0 0 16px', fontWeight: 500 }}>Pending Moderation</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--warning)' }} />
+            <h3 style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+              Pending Moderation Queue ({pending.length})
+            </h3>
+          </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {pending.map(r => (
-              <div key={r.id} style={{
-                background: 'rgba(251,191,36,0.04)', border: '1px solid rgba(251,191,36,0.15)',
-                padding: '20px 24px', display: 'flex', gap: 20, alignItems: 'flex-start',
-              }}>
+              <div
+                key={r.id}
+                style={{
+                  background: 'var(--surface)',
+                  border: '1px solid rgba(180, 83, 9, 0.25)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '20px 24px',
+                  display: 'flex',
+                  gap: 20,
+                  alignItems: 'flex-start',
+                  boxShadow: 'var(--shadow-sm)',
+                }}
+              >
                 <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <div>
-                      <span style={{ fontSize: 12, fontWeight: 500, color: '#f2ebdc' }}>{r.customer}</span>
-                      <span style={{ fontSize: 10, color: 'rgba(242,235,220,0.3)', margin: '0 8px' }}>on</span>
-                      <span style={{ fontSize: 12, color: '#c8f542' }}>{r.product}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, flexWrap: 'wrap', gap: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--text-primary)' }}>{r.customer}</span>
+                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>on</span>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--accent)' }}>{r.product}</span>
                     </div>
-                    <Stars rating={r.rating} />
+                    <StarRating rating={r.rating} />
                   </div>
-                  <p style={{ fontSize: 12, color: 'rgba(242,235,220,0.6)', margin: '0 0 4px', fontWeight: 300, lineHeight: 1.6 }}>{r.text}</p>
-                  <p style={{ fontSize: 10, color: 'rgba(242,235,220,0.25)', margin: 0 }}>{r.date}</p>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 8px', lineHeight: 1.6, fontWeight: 400 }}>"{r.text}"</p>
+                  <p style={{ fontSize: 11.5, color: 'var(--text-muted)', margin: 0 }}>Submitted on {r.date}</p>
                 </div>
+                
                 <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                  <AdminBtn variant="success" onClick={() => approveReview(r.id)} id={`approve-review-${r.id}`}>Approve</AdminBtn>
-                  <AdminBtn variant="danger" onClick={() => deleteReview(r.id)} id={`delete-review-${r.id}`}>Delete</AdminBtn>
+                  <AdminBtn variant="secondary" onClick={() => approveReview(r.id)} id={`approve-review-${r.id}`}>
+                    Approve
+                  </AdminBtn>
+                  <AdminBtn variant="danger" onClick={() => deleteReview(r.id)} id={`delete-review-${r.id}`}>
+                    Reject
+                  </AdminBtn>
                 </div>
               </div>
             ))}
@@ -61,28 +109,48 @@ export default function ReviewsSection() {
         </div>
       )}
 
-      {/* All reviews */}
-      <p style={{ fontSize: 9, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.35)', margin: '0 0 16px', fontWeight: 500 }}>All Reviews</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {reviews.filter(r => r.status !== 'pending').map(r => (
-          <div key={r.id} style={{
-            background: 'rgba(242,235,220,0.02)', border: '1px solid rgba(242,235,220,0.07)',
-            padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16,
-          }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 8 }}>
-                <Stars rating={r.rating} />
-                <span style={{ fontSize: 11, fontWeight: 500, color: '#f2ebdc' }}>{r.customer}</span>
-                <span style={{ fontSize: 10, color: 'rgba(242,235,220,0.3)' }}>on {r.product}</span>
-                <StatusBadge status={r.status} />
+      {/* Published / All Reviews List */}
+      {reviews.length > 0 && (
+        <div>
+          <h3 style={{ margin: '0 0 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            Published Product Feedback
+          </h3>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {reviews.filter(r => r.status !== 'pending').map(r => (
+              <div
+                key={r.id}
+                style={{
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '20px 24px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  gap: 20,
+                  transition: 'box-shadow 0.15s',
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
+                    <StarRating rating={r.rating} />
+                    <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--text-primary)' }}>{r.customer}</span>
+                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>reviewed <strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{r.product}</strong></span>
+                    <StatusBadge status={r.status} />
+                  </div>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 6px', lineHeight: 1.6, fontWeight: 400 }}>"{r.text}"</p>
+                  <p style={{ fontSize: 11.5, color: 'var(--text-muted)', margin: 0 }}>{r.date}</p>
+                </div>
+
+                <AdminBtn variant="danger" onClick={() => deleteReview(r.id)} id={`del-review-${r.id}`}>
+                  Remove
+                </AdminBtn>
               </div>
-              <p style={{ fontSize: 12, color: 'rgba(242,235,220,0.55)', margin: '0 0 4px', fontWeight: 300, lineHeight: 1.6 }}>{r.text}</p>
-              <p style={{ fontSize: 10, color: 'rgba(242,235,220,0.25)', margin: 0 }}>{r.date}</p>
-            </div>
-            <AdminBtn variant="danger" onClick={() => deleteReview(r.id)} id={`del-review-${r.id}`}>Delete</AdminBtn>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   )
 }

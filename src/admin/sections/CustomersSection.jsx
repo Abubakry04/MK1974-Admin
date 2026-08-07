@@ -15,163 +15,283 @@ export default function CustomersSection() {
   })
 
   const filtered = onlyCustomers.filter(c => {
-    const nameStr = c.name ? String(c.name).toLowerCase() : ''
+    const nameStr  = c.name  ? String(c.name).toLowerCase()  : ''
     const emailStr = c.email ? String(c.email).toLowerCase() : ''
-    const searchStr = search ? String(search).toLowerCase() : ''
+    const searchStr = search ? String(search).toLowerCase()  : ''
     const matchSearch = nameStr.includes(searchStr) || emailStr.includes(searchStr)
     const matchFilter = filter === 'all' || c.status === filter
     return matchSearch && matchFilter
   })
 
-  const totalSpent = onlyCustomers.reduce((s, c) => s + (c.totalSpent || 0), 0)
-  const totalOrders = onlyCustomers.reduce((s, c) => s + (c.orders || 0), 0)
+  const totalSpent   = onlyCustomers.reduce((s, c) => s + (c.totalSpent || 0), 0)
+  const totalOrders  = onlyCustomers.reduce((s, c) => s + (c.orders || 0), 0)
   const avgOrderValue = totalOrders > 0 ? Math.round(totalSpent / totalOrders) : 0
 
+  const filterBtnStyle = (active) => ({
+    padding: '7px 14px',
+    fontSize: 13,
+    fontWeight: active ? 500 : 400,
+    cursor: 'pointer',
+    fontFamily: "'DM Sans', sans-serif",
+    borderRadius: 'var(--radius)',
+    background: active ? 'var(--accent)' : 'var(--surface)',
+    color: active ? '#fff' : 'var(--text-secondary)',
+    border: `1px solid ${active ? 'var(--accent)' : 'var(--border-strong)'}`,
+    transition: 'all 0.15s',
+    textTransform: 'capitalize',
+  })
+
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-up">
       <SectionHeader
-        title="Customer Directory"
-        sub={`${onlyCustomers.length} registered customer accounts`}
+        title="Customers"
+        sub={`${onlyCustomers.length} registered accounts`}
       />
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20, marginBottom: 32 }}>
-        <StatCard label="Total Customers" value={onlyCustomers.length} icon="◈" />
-        <StatCard label="Lifetime Revenue" value={`₦${totalSpent.toLocaleString()}`} accent="#16a34a" icon="₦" />
-        <StatCard label="Avg. Order Value" value={`₦${avgOrderValue.toLocaleString()}`} icon="◎" />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+        <StatCard label="Total Customers"  value={onlyCustomers.length} />
+        <StatCard label="Lifetime Revenue" value={`₦${totalSpent.toLocaleString()}`} accent="var(--success)" />
+        <StatCard label="Avg. Order Value" value={`₦${avgOrderValue.toLocaleString()}`} />
       </div>
 
-      {/* Search & Filter bar */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24, alignItems: 'center', flexWrap: 'wrap' }}>
-        <input
-          id="customer-search"
-          placeholder="Search by name or email..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={{
-            background: '#ffffff', border: '1px solid rgba(30,31,33,0.12)',
-            color: '#1E1F21', padding: '10px 16px', fontSize: 12, fontFamily: "'Inter', sans-serif",
-            outline: 'none', width: 280, borderRadius: 4
-          }}
-        />
+      {/* Search & Filter */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ position: 'relative' }}>
+          <svg
+            width="14" height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--text-muted)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
+          >
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            id="customer-search"
+            placeholder="Search by name or email..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              background: 'var(--surface)',
+              border: '1px solid var(--border-strong)',
+              color: 'var(--text-primary)',
+              padding: '8px 14px 8px 36px',
+              fontSize: 13,
+              fontFamily: "'DM Sans', sans-serif",
+              outline: 'none',
+              width: 280,
+              borderRadius: 'var(--radius)',
+              transition: 'border-color 0.15s',
+            }}
+            onFocus={e => e.target.style.borderColor = 'var(--accent)'}
+            onBlur={e => e.target.style.borderColor = 'var(--border-strong)'}
+          />
+        </div>
         {['all', 'active', 'inactive', 'vip'].map(f => (
-          <button key={f} onClick={() => setFilter(f)} style={{
-            padding: '9px 16px', fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase',
-            fontWeight: 700, cursor: 'pointer', fontFamily: "'Inter', sans-serif", borderRadius: 4,
-            background: filter === f ? '#968574' : '#ffffff',
-            color: filter === f ? '#ffffff' : 'rgba(30,31,33,0.6)',
-            border: `1px solid ${filter === f ? '#968574' : 'rgba(30,31,33,0.12)'}`,
-            transition: 'all 0.2s'
-          }}>{f}</button>
+          <button key={f} onClick={() => setFilter(f)} style={filterBtnStyle(filter === f)}>
+            {f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
         ))}
       </div>
 
-      {/* Customer Cards Grid */}
+      {/* Customer Cards */}
       {filtered.length === 0 ? (
-        <div style={{ padding: '60px 20px', textAlign: 'center', color: 'rgba(30,31,33,0.5)', fontSize: 13, background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)', borderRadius: 8 }}>
-          No customer accounts found matching your search.
+        <div style={{
+          padding: '60px 20px',
+          textAlign: 'center',
+          color: 'var(--text-secondary)',
+          fontSize: 13,
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius-lg)',
+        }}>
+          No customers found matching your search.
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
           {filtered.map(c => (
-            <div key={c.id} style={{
-              background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)',
-              padding: '24px 28px', borderRadius: 8, transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
-            }} className="hover-lift">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
+            <div
+              key={c.id}
+              className="card-lift"
+              style={{
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                padding: '20px 22px',
+                borderRadius: 'var(--radius-lg)',
+              }}
+            >
+              {/* Customer header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 16 }}>
                 <div style={{
-                  width: 44, height: 44, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: c.status === 'vip' ? 'rgba(150,133,116,0.15)' : 'rgba(30,31,33,0.05)',
-                  border: `1px solid ${c.status === 'vip' ? 'rgba(150,133,116,0.3)' : 'rgba(30,31,33,0.1)'}`,
-                  fontSize: 16, fontWeight: 700, color: c.status === 'vip' ? '#968574' : 'rgba(30,31,33,0.6)',
-                  borderRadius: '50%'
+                  width: 42,
+                  height: 42,
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: c.status === 'vip' ? 'var(--accent-dim)' : '#F0F0F0',
+                  border: `1px solid ${c.status === 'vip' ? 'rgba(196,98,45,0.3)' : 'var(--border)'}`,
+                  fontSize: 15,
+                  fontWeight: 600,
+                  color: c.status === 'vip' ? 'var(--accent)' : 'var(--text-secondary)',
+                  borderRadius: '50%',
                 }}>
                   {c.name && c.name.length > 0 ? c.name[0].toUpperCase() : '?'}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#1E1F21', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {c.name}
+                    </p>
                     <StatusBadge status={c.status} />
                   </div>
-                  <p style={{ fontSize: 11, color: 'rgba(30,31,33,0.5)', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.email}</p>
+                  <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {c.email}
+                  </p>
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 18 }}>
+              {/* Stats row */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
                 {[
                   { label: 'Orders', value: c.orders },
-                  { label: 'Spent', value: `₦${Number(c.totalSpent || 0).toLocaleString()}` },
+                  { label: 'Spent',  value: `₦${Number(c.totalSpent || 0).toLocaleString()}` },
                   { label: 'Joined', value: String(c.joined).slice(0, 7) },
                 ].map(({ label, value }) => (
-                  <div key={label} style={{ background: '#FAF9F6', padding: '8px 10px', borderRadius: 4 }}>
-                    <p style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '0 0 3px', fontWeight: 600 }}>{label}</p>
-                    <p style={{ fontSize: 12, color: '#1E1F21', margin: 0, fontWeight: 600 }}>{value}</p>
+                  <div key={label} style={{
+                    background: 'var(--bg)',
+                    padding: '8px 10px',
+                    borderRadius: 'var(--radius)',
+                    border: '1px solid var(--border)',
+                  }}>
+                    <p style={{ fontSize: 10.5, fontWeight: 500, color: 'var(--text-muted)', margin: '0 0 2px' }}>{label}</p>
+                    <p style={{ fontSize: 12.5, color: 'var(--text-primary)', margin: 0, fontWeight: 600 }}>{value}</p>
                   </div>
                 ))}
               </div>
-              <AdminBtn variant="ghost" onClick={() => setSelectedCustomer(c)} id={`view-customer-${c.id}`}>View Customer Profile</AdminBtn>
+
+              <AdminBtn variant="ghost" onClick={() => setSelectedCustomer(c)} id={`view-customer-${c.id}`}>
+                View profile
+              </AdminBtn>
             </div>
           ))}
         </div>
       )}
 
-      {/* Customer Profile Modal Drawer */}
+      {/* Customer Profile Modal */}
       {selectedCustomer && (
         <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(30,31,33,0.5)', backdropFilter: 'blur(4px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 20
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.45)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100,
+          padding: 20,
         }}>
           <div style={{
-            background: '#FAF9F6', width: '100%', maxWidth: 520, borderRadius: 8,
-            overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.15)', border: '1px solid rgba(30,31,33,0.08)'
+            background: 'var(--surface)',
+            width: '100%',
+            maxWidth: 520,
+            borderRadius: 'var(--radius-lg)',
+            overflow: 'hidden',
+            boxShadow: 'var(--shadow-lg)',
+            border: '1px solid var(--border)',
           }} className="animate-fade-in">
-            <div style={{ padding: '24px 32px', borderBottom: '1px solid rgba(30,31,33,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            {/* Modal header */}
+            <div style={{
+              padding: '20px 24px',
+              borderBottom: '1px solid var(--border)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
               <div>
-                <p style={{ fontSize: 9, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#968574', margin: 0, fontWeight: 700 }}>Profile</p>
-                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontStyle: 'italic', margin: '2px 0 0', color: '#1E1F21' }}>Customer Record</h3>
+                <p style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', margin: '0 0 2px' }}>Profile</p>
+                <h3 style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: 20,
+                  fontWeight: 600,
+                  margin: 0,
+                  color: 'var(--text-primary)',
+                  letterSpacing: '-0.01em',
+                }}>
+                  Customer Record
+                </h3>
               </div>
-              <button onClick={() => setSelectedCustomer(null)} style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', color: 'rgba(30,31,33,0.4)' }}>×</button>
+              <button
+                onClick={() => setSelectedCustomer(null)}
+                style={{
+                  color: 'var(--text-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: 6,
+                  borderRadius: 'var(--radius)',
+                  transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = '#F0F0F0'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
             </div>
-            <div style={{ padding: 32 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 28 }}>
+
+            <div style={{ padding: 24 }}>
+              {/* Identity */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 24 }}>
                 <div style={{
-                  width: 64, height: 64, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: selectedCustomer.status === 'vip' ? 'rgba(150,133,116,0.15)' : 'rgba(30,31,33,0.06)',
-                  border: `1px solid ${selectedCustomer.status === 'vip' ? 'rgba(150,133,116,0.4)' : 'rgba(30,31,33,0.1)'}`,
-                  fontSize: 24, fontWeight: 700, color: selectedCustomer.status === 'vip' ? '#968574' : 'rgba(30,31,33,0.6)',
-                  borderRadius: '50%'
+                  width: 58,
+                  height: 58,
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: selectedCustomer.status === 'vip' ? 'var(--accent-dim)' : '#F0F0F0',
+                  border: `1px solid ${selectedCustomer.status === 'vip' ? 'rgba(196,98,45,0.3)' : 'var(--border)'}`,
+                  fontSize: 22,
+                  fontWeight: 600,
+                  color: selectedCustomer.status === 'vip' ? 'var(--accent)' : 'var(--text-secondary)',
+                  borderRadius: '50%',
                 }}>
                   {selectedCustomer.name && selectedCustomer.name.length > 0 ? selectedCustomer.name[0].toUpperCase() : '?'}
                 </div>
                 <div>
-                  <h2 style={{ fontSize: 20, fontWeight: 600, color: '#1E1F21', margin: '0 0 6px' }}>{selectedCustomer.name}</h2>
-                  <p style={{ fontSize: 13, color: 'rgba(30,31,33,0.6)', margin: '0 0 8px' }}>{selectedCustomer.email}</p>
+                  <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 4px', letterSpacing: '-0.01em' }}>
+                    {selectedCustomer.name}
+                  </h2>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 8px' }}>{selectedCustomer.email}</p>
                   <StatusBadge status={selectedCustomer.status} />
                 </div>
               </div>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 28 }}>
-                <div style={{ background: '#ffffff', padding: 16, border: '1px solid rgba(30,31,33,0.08)', borderRadius: 6 }}>
-                  <p style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '0 0 4px', fontWeight: 600 }}>First Name</p>
-                  <p style={{ fontSize: 14, color: '#1E1F21', margin: 0, fontWeight: 600 }}>{selectedCustomer.firstName || 'N/A'}</p>
-                </div>
-                <div style={{ background: '#ffffff', padding: 16, border: '1px solid rgba(30,31,33,0.08)', borderRadius: 6 }}>
-                  <p style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '0 0 4px', fontWeight: 600 }}>Last Name</p>
-                  <p style={{ fontSize: 14, color: '#1E1F21', margin: 0, fontWeight: 600 }}>{selectedCustomer.lastName || 'N/A'}</p>
-                </div>
-                <div style={{ background: '#ffffff', padding: 16, border: '1px solid rgba(30,31,33,0.08)', borderRadius: 6 }}>
-                  <p style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '0 0 4px', fontWeight: 600 }}>Phone Number</p>
-                  <p style={{ fontSize: 14, color: '#1E1F21', margin: 0, fontWeight: 600 }}>{selectedCustomer.phoneNumber || 'N/A'}</p>
-                </div>
-                <div style={{ background: '#ffffff', padding: 16, border: '1px solid rgba(30,31,33,0.08)', borderRadius: 6 }}>
-                  <p style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '0 0 4px', fontWeight: 600 }}>Account Role</p>
-                  <p style={{ fontSize: 14, color: '#968574', margin: 0, fontWeight: 600 }}>{selectedCustomer.role || 'Customer'}</p>
-                </div>
+
+              {/* Detail grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+                {[
+                  { label: 'First Name',   value: selectedCustomer.firstName   || 'N/A' },
+                  { label: 'Last Name',    value: selectedCustomer.lastName    || 'N/A' },
+                  { label: 'Phone Number', value: selectedCustomer.phoneNumber || 'N/A' },
+                  { label: 'Account Role', value: selectedCustomer.role        || 'Customer' },
+                ].map(({ label, value }) => (
+                  <div key={label} style={{
+                    background: 'var(--bg)',
+                    padding: '12px 14px',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius)',
+                  }}>
+                    <p style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', margin: '0 0 3px' }}>{label}</p>
+                    <p style={{ fontSize: 13.5, color: 'var(--text-primary)', margin: 0, fontWeight: 600 }}>{value}</p>
+                  </div>
+                ))}
               </div>
-              
+
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <AdminBtn variant="ghost" onClick={() => setSelectedCustomer(null)}>Close Profile</AdminBtn>
+                <AdminBtn variant="ghost" onClick={() => setSelectedCustomer(null)}>Close</AdminBtn>
               </div>
             </div>
           </div>

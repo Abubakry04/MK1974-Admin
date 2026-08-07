@@ -5,71 +5,6 @@ import * as api from '../api/apiClient'
 export const AdminContext = createContext(null)
 export const useAdmin = () => useContext(AdminContext)
 
-// ─── Mock-only data (not yet in API) ──────────────────────────────────────────
-const MOCK_ORDERS = [
-  { id: 'MK100281', customer: 'Marcus Thompson', email: 'marcus.t@mail.com', items: 3, total: 278, status: 'delivered', date: '2025-06-18', country: 'UK' },
-  { id: 'MK100280', customer: 'Leila Rahman', email: 'leila.r@mail.com', items: 1, total: 89, status: 'processing', date: '2025-06-17', country: 'UK' },
-  { id: 'MK100279', customer: 'Jordan K.', email: 'jordan.k@mail.com', items: 2, total: 154, status: 'awaiting_payment', date: '2025-06-17', country: 'UK' },
-  { id: 'MK100278', customer: 'Amara Osei', email: 'amara.o@mail.com', items: 1, total: 129, status: 'shipped', date: '2025-06-16', country: 'Ghana' },
-  { id: 'MK100277', customer: 'David Park', email: 'david.p@mail.com', items: 4, total: 342, status: 'delivered', date: '2025-06-15', country: 'USA' },
-  { id: 'MK100276', customer: 'Sophie Clarke', email: 'sophie.c@mail.com', items: 2, total: 168, status: 'cancelled', date: '2025-06-14', country: 'UK' },
-  { id: 'MK100275', customer: 'Malik Johnson', email: 'malik.j@mail.com', items: 1, total: 79, status: 'delivered', date: '2025-06-13', country: 'Canada' },
-  { id: 'MK100274', customer: 'Yasmin Ali', email: 'yasmin.a@mail.com', items: 3, total: 223, status: 'processing', date: '2025-06-13', country: 'UAE' },
-]
-
-const MOCK_CUSTOMERS = [
-  { id: 'CUST001', name: 'Marcus Thompson', firstName: 'Marcus', lastName: 'Thompson', email: 'marcus.t@mail.com', phoneNumber: '+44 7700 900077', orders: 3, totalSpent: 278, joined: '2025-06-01', status: 'active', role: 'Customer' },
-  { id: 'CUST002', name: 'Leila Rahman', firstName: 'Leila', lastName: 'Rahman', email: 'leila.r@mail.com', phoneNumber: '+44 7700 900088', orders: 1, totalSpent: 89, joined: '2025-06-05', status: 'active', role: 'Customer' },
-  { id: 'CUST003', name: 'Jordan K.', firstName: 'Jordan', lastName: 'K.', email: 'jordan.k@mail.com', phoneNumber: '+44 7700 900099', orders: 2, totalSpent: 154, joined: '2025-06-10', status: 'active', role: 'Customer' },
-  { id: 'CUST004', name: 'Amara Osei', firstName: 'Amara', lastName: 'Osei', email: 'amara.o@mail.com', phoneNumber: '+233 20 123 4567', orders: 1, totalSpent: 129, joined: '2025-06-12', status: 'active', role: 'Customer' },
-  { id: 'CUST005', name: 'David Park', firstName: 'David', lastName: 'Park', email: 'david.p@mail.com', phoneNumber: '+1 202 555 0143', orders: 4, totalSpent: 342, joined: '2025-05-20', status: 'vip', role: 'Customer' },
-  { id: 'CUST006', name: 'Sophie Clarke', firstName: 'Sophie', lastName: 'Clarke', email: 'sophie.c@mail.com', phoneNumber: '+44 7700 900111', orders: 2, totalSpent: 168, joined: '2025-06-14', status: 'active', role: 'Customer' },
-]
-
-
-
-const MOCK_REVIEWS = [
-  { id: 'R001', customer: 'Marcus T.', product: 'Apex Full Tracksuit', rating: 5, text: "The Apex Tracksuit is genuinely the best quality I've had.", date: '2025-06-18', status: 'approved' },
-  { id: 'R002', customer: 'Leila R.', product: 'Motion Jogger Set', rating: 5, text: 'Finally a brand that understands streetwear.', date: '2025-06-17', status: 'approved' },
-  { id: 'R003', customer: 'Jordan K.', product: 'Strike Hoodie', rating: 5, text: "Bought the Strike Hoodie on a whim and now I can't stop wearing it.", date: '2025-06-16', status: 'pending' },
-  { id: 'R004', customer: 'Anon User', product: 'Volt Track Jacket', rating: 2, text: 'Sizing ran small. Had to return.', date: '2025-06-15', status: 'pending' },
-  { id: 'R005', customer: 'Sophie C.', product: 'Terra Fleece Set', rating: 4, text: 'Great quality, comfortable fit. Slightly slow delivery.', date: '2025-06-14', status: 'approved' },
-]
-
-const MOCK_STAFF = [
-  { id: 'ST001', name: 'Mohammed K.', email: 'mo@mk1974.com', role: 'Super Admin', lastLogin: '2025-06-19', status: 'active' },
-  { id: 'ST002', name: 'Aisha D.', email: 'aisha@mk1974.com', role: 'Product Manager', lastLogin: '2025-06-18', status: 'active' },
-  { id: 'ST003', name: 'Tariq N.', email: 'tariq@mk1974.com', role: 'Operations', lastLogin: '2025-06-17', status: 'active' },
-  { id: 'ST004', name: 'Kira W.', email: 'kira@mk1974.com', role: 'Customer Support', lastLogin: '2025-06-15', status: 'active' },
-]
-
-const MOCK_DISCOUNTS = [
-  { id: 'DC001', code: 'VOLT20', type: 'percentage', value: 20, used: 142, limit: 500, status: 'active', expires: '2025-08-01' },
-  { id: 'DC002', code: 'SUMMER10', type: 'percentage', value: 10, used: 89, limit: 1000, status: 'active', expires: '2025-09-01' },
-  { id: 'DC003', code: 'FIRSTORDER', type: 'fixed', value: 15, used: 234, limit: null, status: 'active', expires: null },
-  { id: 'DC004', code: 'FLASH50', type: 'percentage', value: 50, used: 500, limit: 500, status: 'expired', expires: '2025-05-01' },
-]
-
-const MOCK_ANALYTICS = {
-  revenue: [8200, 9400, 11200, 10800, 13400, 15600, 14200, 16800, 18200, 17400, 20100, 22800],
-  orders: [64, 72, 88, 82, 104, 121, 109, 132, 144, 138, 158, 178],
-  months: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-  topProducts: [
-    { name: 'Apex Full Tracksuit', sold: 312, revenue: 40248 },
-    { name: 'Motion Jogger Set', sold: 278, revenue: 20850 },
-    { name: 'Strike Hoodie', sold: 234, revenue: 18486 },
-    { name: 'Volt Track Jacket', sold: 189, revenue: 16821 },
-    { name: 'Terra Fleece Set', sold: 112, revenue: 10640 },
-  ],
-  traffic: [
-    { source: 'Organic Search', pct: 42 },
-    { source: 'Direct', pct: 28 },
-    { source: 'Social Media', pct: 18 },
-    { source: 'Email', pct: 8 },
-    { source: 'Referral', pct: 4 },
-  ],
-}
-
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function AdminProvider({ children }) {
   // ── Admin auth ──
@@ -89,41 +24,47 @@ export function AdminProvider({ children }) {
   const [apiLoading, setApiLoading] = useState(false)
   const [apiError, setApiError] = useState(null)
 
-  // ── Mock-only data ──
+  // ── Live arrays only — NO dummy/mock fallback data ──
   const [orders, setOrders] = useState(() => {
     try {
       const localOrders = JSON.parse(localStorage.getItem('mk1974_orders') || '[]')
-      const formattedLocal = localOrders.map(o => ({
+      return localOrders.map(o => ({
         id: o.id,
-        customer: `${o.firstName} ${o.lastName}`,
-        email: o.email,
-        items: o.items ? o.items.reduce((sum, item) => sum + item.qty, 0) : 0,
-        total: o.total,
-        status: o.status,
+        customer: `${o.firstName || ''} ${o.lastName || ''}`.trim() || 'Customer',
+        email: o.email || 'N/A',
+        items: o.items ? o.items.reduce((sum, item) => sum + (item.qty || 1), 0) : 1,
+        total: o.total || 0,
+        status: o.status || 'pendingpayment',
         date: o.createdAt ? o.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
         country: o.country || 'Nigeria'
       }))
-      return [...formattedLocal, ...MOCK_ORDERS]
     } catch {
-      return MOCK_ORDERS
+      return []
     }
   })
-  const [customers, setCustomers] = useState(MOCK_CUSTOMERS)
-  const [reviews, setReviews] = useState(MOCK_REVIEWS)
-  const [staff] = useState(MOCK_STAFF)
-  const [discounts, setDiscounts] = useState(MOCK_DISCOUNTS)
+  const [customers, setCustomers] = useState([])
+  const [reviews, setReviews] = useState([])
+  const [staff] = useState([])
+  const [discounts, setDiscounts] = useState([])
+
+  const [dashboardSummary, setDashboardSummary] = useState(null)
+  const [dashboardOverview, setDashboardOverview] = useState(null)
+  const [pendingPayments, setPendingPayments] = useState([])
 
   const fetchAllApiData = useCallback(async () => {
     setApiLoading(true)
     setApiError(null)
     try {
-      const [prods, cats, cols, szs, custs, ords] = await Promise.all([
+      const [prods, cats, cols, szs, custs, ords, dashSummary, dashOverview, pendingPays] = await Promise.all([
         api.products.getAll().catch(err => { console.error("Failed to fetch products from API", err); return []; }),
         api.categories.getAll().catch(err => { console.error("Failed to fetch categories from API", err); return []; }),
         api.colors.getAll().catch(err => { console.error("Failed to fetch colors from API", err); return []; }),
         api.sizes.getAll().catch(err => { console.error("Failed to fetch sizes from API", err); return []; }),
         api.customers.getAll().catch(err => { console.error("Failed to fetch customers from API", err); return []; }),
         api.orders.getAll().catch(err => { console.error("Failed to fetch orders from API", err); return []; }),
+        api.dashboard.getSummary().catch(err => { console.error("Failed to fetch dashboard summary from API", err); return null; }),
+        api.dashboard.getOverview().catch(err => { console.error("Failed to fetch dashboard overview from API", err); return null; }),
+        api.payments.getPending().catch(err => { console.error("Failed to fetch pending payments from API", err); return []; }),
       ])
       
       function extractArray(res) {
@@ -145,8 +86,11 @@ export function AdminProvider({ children }) {
       const parsedCats = extractArray(cats)
       const parsedCols = extractArray(cols)
       const parsedSzs = extractArray(szs)
+      const parsedPays = extractArray(pendingPays)
       
-      setCustomers(parsedCusts.length > 0 ? parsedCusts.map(c => ({
+      setPendingPayments(parsedPays)
+      
+      setCustomers(parsedCusts.map(c => ({
         ...c,
         id: c.userId ?? c.id,
         firstName: c.firstName || '',
@@ -159,21 +103,49 @@ export function AdminProvider({ children }) {
         joined: c.createdAt ? c.createdAt.split('T')[0] : 'Recently',
         status: c.status || (c.role === 'Admin' || c.role === 1 || String(c.role).toLowerCase() === 'admin' ? 'vip' : 'active'),
         role: c.role ?? 'Customer'
-      })) : MOCK_CUSTOMERS)
+      })))
       
       if (parsedOrds.length > 0) {
-        setOrders(parsedOrds.map(o => ({
-          ...o,
-          id: String(o.orderId ?? o.id ?? `ORD-${Math.floor(Math.random()*10000)}`),
-          customer: o.customerName || (o.user ? `${o.user.firstName || ''} ${o.user.lastName || ''}`.trim() : 'Unknown'),
-          email: o.email || o.user?.email || 'N/A',
-          items: Array.isArray(o.items) ? o.items.reduce((sum, item) => sum + (item.quantity || 1), 0) : (o.totalItems || 1),
-          total: o.totalAmount ?? o.total ?? 0,
-          status: o.status ? String(o.status).toLowerCase() : 'processing',
-          date: o.createdAt ? o.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
-          country: o.country || o.shippingAddress?.country || 'N/A'
-        })))
+        const mappedOrds = parsedOrds.map(o => {
+          const rawDate = o.orderDate || o.submittedAt || o.paidAt || (o.createdAt && !o.createdAt.startsWith('0001') ? o.createdAt : null) || o.date
+          let displayDate = new Date().toISOString().split('T')[0]
+          if (rawDate && !String(rawDate).startsWith('0001')) {
+            try {
+              const d = new Date(rawDate)
+              if (!isNaN(d.getTime())) {
+                displayDate = d.toISOString().split('T')[0]
+              } else {
+                displayDate = String(rawDate).split('T')[0]
+              }
+            } catch {
+              displayDate = String(rawDate).split('T')[0]
+            }
+          }
+
+          return {
+            ...o,
+            id: String(o.orderId ?? o.id ?? `ORD-${Math.floor(Math.random()*10000)}`),
+            customer: o.customerName || (o.user ? `${o.user.firstName || ''} ${o.user.lastName || ''}`.trim() : 'Unknown'),
+            email: o.email || o.customerEmail || o.user?.email || 'N/A',
+            items: Array.isArray(o.items) ? o.items.reduce((sum, item) => sum + (item.quantity || 1), 0) : (o.totalItems || 1),
+            total: o.totalAmount ?? o.total ?? 0,
+            status: o.status ? String(o.status).toLowerCase() : 'processing',
+            date: displayDate,
+            rawDate: rawDate || new Date().toISOString(),
+            country: o.country || o.shippingAddress?.country || 'N/A'
+          }
+        })
+
+        mappedOrds.sort((a, b) => {
+          const timeA = new Date(a.rawDate).getTime() || 0
+          const timeB = new Date(b.rawDate).getTime() || 0
+          if (timeB !== timeA) return timeB - timeA
+          return Number(b.id || 0) - Number(a.id || 0)
+        })
+
+        setOrders(mappedOrds)
       }
+
       if (parsedProds.length > 0) {
         setProducts(parsedProds.map(p => ({
           ...p,
@@ -184,50 +156,51 @@ export function AdminProvider({ children }) {
           })
         })))
       }
+
       if (parsedCats.length > 0) {
         setCategories(parsedCats.map(c => ({
           ...c,
           id: c.categoryId ?? c.id
         })))
       }
+
       if (parsedCols.length > 0) {
         setColors(parsedCols.map(c => ({
           ...c,
           id: c.colorId ?? c.id
         })))
       }
+
       if (parsedSzs.length > 0) {
         setSizes(parsedSzs.map(s => ({
           ...s,
           id: s.sizeId ?? s.id
         })))
       }
+
+      if (dashSummary) setDashboardSummary(dashSummary)
+      if (dashOverview) setDashboardOverview(dashOverview)
     } catch (err) {
-      console.error('[Admin API] Failed to load data:', err)
-      setApiError(err.message)
+      setApiError(err.message || 'Failed to fetch API data.')
     } finally {
       setApiLoading(false)
     }
   }, [])
 
-  // ─── Load live data ───────────────────────────────────────────────────────
   useEffect(() => {
-    if (adminUser?.token) api.setToken(adminUser.token)
     fetchAllApiData()
-  }, [adminUser, fetchAllApiData])
+  }, [fetchAllApiData])
 
-  // ─── Auth ─────────────────────────────────────────────────────────────────
+  // ── Auth helpers ──
   const adminLogin = useCallback(async (credentials) => {
     try {
       const data = await api.auth.login({
         email: credentials.email,
         password: credentials.password,
       })
-      // API returns a token (string) or an object with a token field
       const token = typeof data === 'string' ? data : (data?.token || data?.accessToken || data?.jwt)
       if (token) api.setToken(token)
 
-      // Build admin user object from response or credentials
       const adminData = {
         email: credentials.email,
         name: data?.firstName ? `${data.firstName} ${data.lastName}` : (data?.name || credentials.email.split('@')[0]),
@@ -243,7 +216,7 @@ export function AdminProvider({ children }) {
     } catch (err) {
       return { success: false, error: err.message || 'Login failed. Check your credentials.' }
     }
-  }, [])
+  }, [fetchAllApiData])
 
   const adminLogout = useCallback(() => {
     setAdminUser(null)
@@ -257,9 +230,30 @@ export function AdminProvider({ children }) {
     setActiveSection('dashboard')
   }, [])
 
-  // ─── Product CRUD ─────────────────────────────────────────────────────────
-  const createProduct = useCallback(async (body) => {
+  // Auto-logout when session expires or backend returns HTTP 401
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      console.warn('[AdminContext] Session expired — logging out admin automatically.')
+      adminLogout()
+    }
+    window.addEventListener('auth_session_expired', handleSessionExpired)
+    return () => window.removeEventListener('auth_session_expired', handleSessionExpired)
+  }, [adminLogout])
+
+  // ─── Product CRUD ─────────────────────────────────────────────────────
+  const createProduct = useCallback(async (body, imageFiles) => {
     const data = await api.products.create(body)
+    const unwrap = (v) => v?.data ?? v
+    const raw = unwrap(data)
+    const productId = raw?.productId ?? raw?.id ?? raw?.product?.productId ?? raw?.product?.id ?? (typeof raw === 'number' ? raw : undefined)
+
+    if (productId && imageFiles && imageFiles.length > 0) {
+      try {
+        await api.products.uploadImages(productId, imageFiles)
+      } catch (err) {
+        console.error('[Image Upload] Failed:', err.message)
+      }
+    }
     await fetchAllApiData()
     return data
   }, [fetchAllApiData])
@@ -311,38 +305,62 @@ export function AdminProvider({ children }) {
     setSizes(prev => prev.filter(s => s.id !== id))
   }, [])
 
-  // ─── Order / Review / Discount helpers (mock & live) ─────────────────────────────
-  const updateOrderStatus = useCallback((orderId, status) => {
-    // Send to backend (optimistic UI update below)
-    api.orders.updateStatus(orderId, status).catch(err => console.log('Mock or live update failed:', err))
+  // ─── Order / Review / Discount helpers ─────────────────────────────
+  const updateOrderStatus = useCallback(async (orderId, status) => {
+    const norm = String(status || '').trim().toLowerCase().replace(/[^a-z]/g, '')
+    const orderIdStr = String(orderId).toLowerCase()
 
-    setOrders(prev => {
-      const next = prev.map(o => o.id === orderId ? { ...o, status: status.toLowerCase() } : o)
-      try {
-        const localOrders = JSON.parse(localStorage.getItem('mk1974_orders') || '[]')
-        const updatedLocal = localOrders.map(o => {
-          if (o.id === orderId) {
-            const statusOrder = ['Pending', 'Paid', 'Failed', 'Cancelled', 'Refunded']
-            let targetStatus = status
-            const targetIdx = statusOrder.indexOf(targetStatus)
-            const updatedTimeline = o.timeline ? o.timeline.map(t => {
-              const currentIdx = statusOrder.indexOf(t.status)
-              if (currentIdx <= targetIdx) {
-                return { ...t, done: true, date: t.date || new Date().toISOString() }
-              }
-              return { ...t, done: false, date: null }
-            }) : []
-            return { ...o, status: targetStatus.toLowerCase(), timeline: updatedTimeline }
+    const findPaymentForOrder = () => {
+      const item = (pendingPayments || []).find(p => {
+        const fields = [
+          p.orderId, p.orderNumber, p.order, p.orderRef,
+          p.OrderId, p.OrderNumber, p.Order,
+        ]
+        return fields.some(f => f != null && String(f).toLowerCase() === orderIdStr)
+      })
+      if (item) return item?.paymentId ?? item?.id
+
+      const rawOrder = orders.find(o => String(o.id).toLowerCase() === orderIdStr)
+      return rawOrder?.paymentId ?? rawOrder?.PaymentId ?? null
+    }
+
+    try {
+      if (norm === 'paid') {
+        const targetPaymentId = findPaymentForOrder()
+        if (targetPaymentId) {
+          await api.payments.review(targetPaymentId, 'Approved')
+        } else {
+          try {
+            await api.orders.updateStatus(orderId, 'Processing')
+          } catch (errFallback) {
+            console.warn('[updateOrderStatus] Server updateStatus fallback warning:', errFallback.message)
           }
-          return o
-        })
-        localStorage.setItem('mk1974_orders', JSON.stringify(updatedLocal))
-      } catch (err) {
-        console.error(err)
+        }
+
+      } else if (norm === 'paymentrejected' || norm === 'rejected') {
+        const targetPaymentId = findPaymentForOrder()
+        if (targetPaymentId) {
+          await api.payments.review(targetPaymentId, 'Rejected')
+        } else {
+          try {
+            await api.orders.updateStatus(orderId, 'Cancelled')
+          } catch (errFallback) {
+            console.warn('[updateOrderStatus] Server updateStatus fallback warning:', errFallback.message)
+          }
+        }
+
+      } else {
+        await api.orders.updateStatus(orderId, status)
       }
-      return next
-    })
-  }, [])
+
+      setOrders(prev => prev.map(o => String(o.id).toLowerCase() === orderIdStr ? { ...o, status: norm } : o))
+      await fetchAllApiData()
+      return { success: true }
+    } catch (err) {
+      console.error('[Update Order Status Error]:', err.message)
+      return { success: false, error: err.message }
+    }
+  }, [orders, pendingPayments, fetchAllApiData])
 
   const approveReview = useCallback((reviewId) => {
     setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, status: 'approved' } : r))
@@ -358,38 +376,68 @@ export function AdminProvider({ children }) {
     ))
   }, [])
 
+  const reviewPayment = useCallback(async (paymentId, decision, notes) => {
+    try {
+      await api.payments.review(paymentId, decision, notes)
+      setPendingPayments(prev => prev.filter(p => (p.paymentId ?? p.id) !== paymentId))
+      await fetchAllApiData()
+      return { success: true }
+    } catch (err) {
+      console.error('[Review Payment Error]:', err.message)
+      return { success: false, error: err.message }
+    }
+  }, [fetchAllApiData])
+
   // ─── Stats ────────────────────────────────────────────────────────────────
   const stats = {
-    totalRevenue: orders.filter(o => o.status === 'paid').reduce((s, o) => s + o.total, 0),
-    totalOrders: orders.length,
-    totalCustomers: customers.length,
-    totalProducts: products.length,
-    pendingOrders: orders.filter(o => ['pending'].includes(o.status)).length,
-    pendingReviews: reviews.filter(r => r.status === 'pending').length,
+    totalRevenue: dashboardSummary?.totalRevenue ?? orders.filter(o => o.status === 'paid').reduce((s, o) => s + o.total, 0),
+    totalOrders: dashboardSummary?.totalOrders ?? orders.length,
+    totalCustomers: dashboardSummary?.totalCustomers ?? customers.length,
+    totalProducts: dashboardSummary?.totalProducts ?? products.length,
+    pendingOrders: dashboardSummary?.pendingOrdersCount ?? orders.filter(o => ['pending', 'pendingpayment'].includes(o.status)).length,
   }
 
   const value = {
-    // Auth
-    adminUser, adminLogin, adminLogout,
-    // UI
-    activeSection, setActiveSection,
-    sidebarCollapsed, setSidebarCollapsed,
-    // Live API data
-    products, categories, colors, sizes,
-    apiLoading, apiError, fetchAllApiData,
-    // Product CRUD
-    createProduct, updateProduct, deleteProduct,
-    // Category CRUD
-    createCategory, deleteCategory,
-    // Color CRUD
-    createColor, deleteColor,
-    // Size CRUD
-    createSize, deleteSize,
-    // Mock data
-    orders, customers, reviews, staff, discounts,
-    // Helpers
-    stats, analytics: MOCK_ANALYTICS,
-    updateOrderStatus, approveReview, deleteReview, toggleDiscount,
+    adminUser,
+    adminLogin,
+    adminLogout,
+    activeSection,
+    setActiveSection,
+    sidebarCollapsed,
+    setSidebarCollapsed,
+    // Live API Data
+    products,
+    categories,
+    colors,
+    sizes,
+    apiLoading,
+    apiError,
+    fetchAllApiData,
+    // CRUD
+    createProduct,
+    updateProduct,
+    deleteProduct,
+    createCategory,
+    deleteCategory,
+    createColor,
+    deleteColor,
+    createSize,
+    deleteSize,
+    // Live State
+    orders,
+    customers,
+    reviews,
+    staff,
+    discounts,
+    pendingPayments,
+    dashboardSummary,
+    dashboardOverview,
+    updateOrderStatus,
+    approveReview,
+    deleteReview,
+    toggleDiscount,
+    reviewPayment,
+    stats,
   }
 
   return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>

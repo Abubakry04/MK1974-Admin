@@ -32,8 +32,27 @@ export default function CategoriesSection() {
     }
   }
 
-  const productCount = (catId) =>
-    products.filter(p => (p.categories || []).some(c => String(c.id) === String(catId))).length
+  const productCount = (catId, catName) => {
+    const catIdStr = String(catId).toLowerCase()
+    const targetCatName = catName?.toLowerCase()
+    return products.filter(p => {
+      if (p.categoryId != null && String(p.categoryId).toLowerCase() === catIdStr) return true
+      if (Array.isArray(p.categoryIds) && p.categoryIds.some(id => String(id).toLowerCase() === catIdStr)) return true
+      if (Array.isArray(p.categories)) {
+        return p.categories.some(c => {
+          if (typeof c === 'string') return c.toLowerCase() === catIdStr || (targetCatName && c.toLowerCase() === targetCatName)
+          const cId = String(c.id ?? c.categoryId ?? '').toLowerCase()
+          const cName = String(c.name || '').toLowerCase()
+          return cId === catIdStr || (targetCatName && (cName === targetCatName || cName.includes(targetCatName)))
+        })
+      }
+      if (p.category) {
+        const pCat = String(p.category).toLowerCase()
+        return pCat === catIdStr || (targetCatName && (pCat === targetCatName || pCat.includes(targetCatName)))
+      }
+      return false
+    }).length
+  }
 
   return (
     <div className="animate-fade-in">
@@ -108,15 +127,15 @@ export default function CategoriesSection() {
               >×</button>
             </div>
             <div>
-              <p style={{ fontSize: 28, fontFamily: "'Playfair Display', serif", fontWeight: 900, fontStyle: 'italic', color: '#968574', margin: 0 }}>{productCount(cat.id)}</p>
-              <p style={{ fontSize: 9, color: 'rgba(30,31,33,0.5)', margin: 0, letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 600 }}>Assigned Products</p>
+              <p style={{ fontSize: 28, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: 'var(--accent)', margin: 0 }}>{productCount(cat.id, cat.name)}</p>
+              <p style={{ fontSize: 10, color: 'var(--text-muted)', margin: 0, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600 }}>Assigned Products</p>
             </div>
           </div>
         ))}
       </div>
 
       {categories.length === 0 && !apiLoading && (
-        <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(30,31,33,0.5)', fontSize: 13, background: '#ffffff', borderRadius: 8, border: '1px solid rgba(30,31,33,0.08)' }}>
+        <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-secondary)', fontSize: 13, background: 'var(--surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)' }}>
           No categories found. Click "+ New Category" above to create one.
         </div>
       )}
