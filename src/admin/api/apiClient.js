@@ -280,9 +280,12 @@ export const payments = {
     if (receiptFile) fd.append('Receipt', receiptFile)
     return requestFormData('POST', '/api/Payment/submit', fd)
   },
-  // paymentId here is the payment's own ID from GET /api/Payment/pending, NOT the orderId
+  // paymentId must be a numeric integer matching GET /api/Payment/pending
   review: (paymentId, decision, notes = '') => {
+    const cleanId = String(paymentId ?? '').replace(/[^0-9]/g, '')
+    const numericId = parseInt(cleanId, 10)
+    const targetId = !isNaN(numericId) ? numericId : paymentId
     const validDecision = (typeof decision === 'string' && decision.toLowerCase().startsWith('appr')) ? 'Approved' : 'Rejected'
-    return request('POST', `/api/Payment/${paymentId}/review`, { decision: validDecision, notes: notes || '' })
+    return request('POST', `/api/Payment/${targetId}/review`, { decision: validDecision, notes: notes || '' })
   },
 }

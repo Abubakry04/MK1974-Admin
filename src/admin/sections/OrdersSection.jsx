@@ -314,36 +314,54 @@ export default function OrdersSection() {
             </div>
 
             {/* 1. FRONT & CENTER AT THE VERY TOP: Quick Status Action Buttons */}
-            <div style={{ marginBottom: 18, padding: 14, background: 'var(--bg)', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Instant Status Buttons</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            {(selectedOrder.status === 'pendingpayment' || selectedOrder.status === 'paymentsubmitted') && (
+              <div style={{ marginBottom: 16, padding: '12px 14px', background: 'var(--accent-dim)', borderRadius: 'var(--radius)', border: '1px solid rgba(196,98,45,0.25)' }}>
+                <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent)', margin: '0 0 6px' }}>
+                  📄 Payment Approval Required
+                </p>
+                <p style={{ fontSize: 11.5, color: 'var(--text-secondary)', margin: '0 0 10px', lineHeight: 1.5 }}>
+                  Customer submitted a bank transfer receipt for Order #{selectedOrder.id}. Review and approve payment in the Payments section.
+                </p>
                 <AdminBtn
                   variant="secondary"
-                  disabled={statusUpdatingId === selectedOrder.id}
-                  onClick={() => handleStatusClick(selectedOrder.id, 'Paid')}
+                  onClick={() => setActiveSection('payments')}
+                  id="go-to-payments-btn"
                 >
-                  Approve (Paid)
+                  Go to Payments Section →
                 </AdminBtn>
+              </div>
+            )}
+
+            <div style={{ marginBottom: 18, padding: 14, background: 'var(--bg)', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Update Fulfillment Status</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 <AdminBtn
-                  variant="ghost"
+                  variant={selectedOrder.status === 'processing' ? 'secondary' : 'ghost'}
                   disabled={statusUpdatingId === selectedOrder.id}
                   onClick={() => handleStatusClick(selectedOrder.id, 'Processing')}
                 >
                   Processing
                 </AdminBtn>
                 <AdminBtn
-                  variant="ghost"
+                  variant={selectedOrder.status === 'shipped' ? 'secondary' : 'ghost'}
                   disabled={statusUpdatingId === selectedOrder.id}
                   onClick={() => handleStatusClick(selectedOrder.id, 'Shipped')}
                 >
                   Shipped
                 </AdminBtn>
                 <AdminBtn
-                  variant="ghost"
+                  variant={selectedOrder.status === 'delivered' ? 'secondary' : 'ghost'}
                   disabled={statusUpdatingId === selectedOrder.id}
                   onClick={() => handleStatusClick(selectedOrder.id, 'Delivered')}
                 >
                   Delivered
+                </AdminBtn>
+                <AdminBtn
+                  variant={selectedOrder.status === 'cancelled' ? 'danger' : 'ghost'}
+                  disabled={statusUpdatingId === selectedOrder.id}
+                  onClick={() => handleStatusClick(selectedOrder.id, 'Cancelled')}
+                >
+                  Cancelled
                 </AdminBtn>
               </div>
             </div>
