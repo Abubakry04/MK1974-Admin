@@ -310,48 +310,11 @@ export function AdminProvider({ children }) {
     const norm = String(status || '').trim().toLowerCase().replace(/[^a-z]/g, '')
     const orderIdStr = String(orderId).toLowerCase()
 
-    const findPaymentForOrder = () => {
-      const item = (pendingPayments || []).find(p => {
-        const fields = [
-          p.orderId, p.orderNumber, p.order, p.orderRef,
-          p.OrderId, p.OrderNumber, p.Order,
-        ]
-        return fields.some(f => f != null && String(f).toLowerCase() === orderIdStr)
-      })
-      if (item) return item?.paymentId ?? item?.id
-
-      const rawOrder = orders.find(o => String(o.id).toLowerCase() === orderIdStr)
-      return rawOrder?.paymentId ?? rawOrder?.PaymentId ?? null
-    }
-
     try {
-      if (norm === 'paid') {
-        const targetPaymentId = findPaymentForOrder()
-        if (targetPaymentId) {
-          await api.payments.review(targetPaymentId, 'Approved')
-        } else {
-          try {
-            await api.orders.updateStatus(orderId, 'Processing')
-          } catch (errFallback) {
-            console.warn('[updateOrderStatus] Server updateStatus fallback warning:', errFallback.message)
-          }
-        }
-
-      } else if (norm === 'paymentrejected' || norm === 'rejected') {
-        const targetPaymentId = findPaymentForOrder()
-        if (targetPaymentId) {
-          await api.payments.review(targetPaymentId, 'Rejected')
-        } else {
-          try {
-            await api.orders.updateStatus(orderId, 'Cancelled')
-          } catch (errFallback) {
-            console.warn('[updateOrderStatus] Server updateStatus fallback warning:', errFallback.message)
-          }
-        }
-
-      } else {
-        await api.orders.updateStatus(orderId, status)
-      }
+      // Order status updates handle fulfillment stages (Processing, Shipped, Delivered, Cancelled)
+      // Payment receipt approval is handled separately in the Payments section via /api/Payment/{id}/review
+      const apiStatus = (norm === 'paid' || norm === 'paymentapproved') ? 'Processing' : status
+      await api.orders.updateStatus(orderId, apiStatus)
 
       setOrders(prev => prev.map(o => String(o.id).toLowerCase() === orderIdStr ? { ...o, status: norm } : o))
       await fetchAllApiData()
@@ -360,7 +323,7 @@ export function AdminProvider({ children }) {
       console.error('[Update Order Status Error]:', err.message)
       return { success: false, error: err.message }
     }
-  }, [orders, pendingPayments, fetchAllApiData])
+  }, [fetchAllApiData])
 
   const approveReview = useCallback((reviewId) => {
     setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, status: 'approved' } : r))
