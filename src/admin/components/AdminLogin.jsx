@@ -123,16 +123,30 @@ export default function AdminLogin() {
         padding: '48px 32px',
       }}>
         <div style={{ width: '100%', maxWidth: 400 }} className="animate-fade-up">
-          {/* Mobile brand */}
-          <div className="desktop-hide" style={{ marginBottom: 40 }}>
-            <span style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontWeight: 600,
-              fontSize: 22,
-              color: '#111111',
+          {/* Mobile brand logo — standalone logo mark */}
+          <div className="desktop-hide" style={{ textAlign: 'center', marginBottom: 32 }}>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 64,
+              height: 64,
+              borderRadius: '50%',
+              background: '#FFFFFF',
+              boxShadow: '0 4px 18px rgba(0,0,0,0.05)',
+              border: '1px solid rgba(0,0,0,0.06)',
             }}>
-              MK 1974
-            </span>
+              <img
+                src={mkLogo}
+                alt="Brand Logo"
+                style={{
+                  height: 34,
+                  width: 'auto',
+                  display: 'block',
+                  filter: 'brightness(0)',
+                }}
+              />
+            </div>
           </div>
 
           {/* Heading */}

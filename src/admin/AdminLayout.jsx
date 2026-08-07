@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAdmin } from './context/AdminContext'
 import AdminSidebar from './components/AdminSidebar'
 import AdminLogin from './components/AdminLogin'
+import mkLogo from '../assets/mk2.png'
 
 // Sections
 import DashboardOverview from './sections/DashboardOverview'
@@ -132,6 +133,14 @@ export default function AdminLayout() {
 
           {/* Left side */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            {/* Mobile Brand Logo */}
+            <div className="desktop-hide" style={{ display: 'flex', alignItems: 'center', paddingRight: 4 }}>
+              <img
+                src={mkLogo}
+                alt="Brand Logo"
+                style={{ height: 26, width: 'auto', opacity: 0.95 }}
+              />
+            </div>
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
