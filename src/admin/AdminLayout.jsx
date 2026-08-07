@@ -134,21 +134,12 @@ export default function AdminLayout() {
           {/* Left side */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             {/* Mobile Brand Logo */}
-            <div className="desktop-hide" style={{ display: 'flex', alignItems: 'center', gap: 8, paddingRight: 4 }}>
+            <div className="desktop-hide" style={{ display: 'flex', alignItems: 'center', paddingRight: 4 }}>
               <img
                 src={mkLogo}
-                alt="MK 1974"
-                style={{ height: 28, width: 'auto', opacity: 0.95 }}
+                alt="Brand Logo"
+                style={{ height: 26, width: 'auto', opacity: 0.95 }}
               />
-              <span style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontWeight: 600,
-                fontSize: 16,
-                color: 'var(--text-primary)',
-                letterSpacing: '0.04em'
-              }}>
-                MK 1974
-              </span>
             </div>
             {/* Mobile hamburger */}
             <button
