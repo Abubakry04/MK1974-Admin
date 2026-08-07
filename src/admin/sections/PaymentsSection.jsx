@@ -1,94 +1,222 @@
+import { useState } from 'react'
 import { useAdmin } from '../context/AdminContext'
-import { SectionHeader, StatusBadge, StatCard, Table } from './DashboardOverview'
-
-const MOCK_PAYMENTS = [
-  { id: 'PAY-8821', order: 'MK100281', customer: 'Marcus Thompson', amount: 278, method: 'Visa •••• 4242', status: 'success', date: '2025-06-18' },
-  { id: 'PAY-8820', order: 'MK100280', customer: 'Leila Rahman', amount: 89, method: 'Apple Pay', status: 'success', date: '2025-06-17' },
-  { id: 'PAY-8819', order: 'MK100279', customer: 'Jordan K.', amount: 154, method: 'PayPal', status: 'pending', date: '2025-06-17' },
-  { id: 'PAY-8818', order: 'MK100278', customer: 'Amara Osei', amount: 129, method: 'Mastercard •••• 9012', status: 'success', date: '2025-06-16' },
-  { id: 'PAY-8817', order: 'MK100277', customer: 'David Park', amount: 342, method: 'Visa •••• 5678', status: 'success', date: '2025-06-15' },
-  { id: 'PAY-8816', order: 'MK100276', customer: 'Sophie Clarke', amount: 168, method: 'PayPal', status: 'refunded', date: '2025-06-14' },
-  { id: 'PAY-8815', order: 'MK100275', customer: 'Malik Johnson', amount: 79, method: 'Apple Pay', status: 'success', date: '2025-06-13' },
-]
-
-const PAY_STATUS_MAP = {
-  success: { bg: 'rgba(34,197,94,0.1)', color: '#4ade80', label: 'Paid' },
-  pending: { bg: 'rgba(234,179,8,0.1)', color: '#fbbf24', label: 'Pending' },
-  refunded: { bg: 'rgba(239,68,68,0.1)', color: '#f87171', label: 'Refunded' },
-  failed: { bg: 'rgba(107,114,128,0.1)', color: '#9ca3af', label: 'Failed' },
-}
-
-function PayStatus({ status }) {
-  const s = PAY_STATUS_MAP[status] || PAY_STATUS_MAP.failed
-  return <span style={{ display: 'inline-block', padding: '3px 10px', background: s.bg, color: s.color, fontSize: 9, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase' }}>{s.label}</span>
-}
+import { SectionHeader, StatCard, AdminBtn } from './DashboardOverview'
 
 export default function PaymentsSection() {
-  const { orders } = useAdmin()
-  const totalRevenue = MOCK_PAYMENTS.filter(p => p.status === 'success').reduce((s, p) => s + p.amount, 0)
-  const refunded = MOCK_PAYMENTS.filter(p => p.status === 'refunded').reduce((s, p) => s + p.amount, 0)
+  const { orders = [], pendingPayments = [], reviewPayment, apiLoading, apiError } = useAdmin()
+  const [processingPaymentId, setProcessingPaymentId] = useState(null)
+  const [actionNotice, setActionNotice] = useState('')
+  const [reviewError, setReviewError] = useState('')
+
+  const handlePaymentReview = async (paymentId, decision) => {
+    setProcessingPaymentId(paymentId)
+    setReviewError('')
+    setActionNotice('')
+    const res = await reviewPayment(paymentId, decision)
+    setProcessingPaymentId(null)
+    if (res.success) {
+      setActionNotice(`Transfer payment ${decision.toLowerCase()} successfully!`)
+    } else {
+      setReviewError(res.error || 'Failed to review payment.')
+    }
+  }
+
+  if (apiLoading) {
+    return (
+      <div className="animate-fade-in" style={{ padding: '60px 20px', textAlign: 'center' }}>
+        <div style={{
+          width: 32, height: 32, border: '3px solid var(--border)', borderTopColor: 'var(--accent)',
+          borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px'
+        }} />
+        <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>Loading payment receipts and live API data...</p>
+      </div>
+    )
+  }
 
   return (
-    <div>
-      <SectionHeader title="Payments" sub="Transaction and payment history" />
+    <div className="animate-fade-up">
+      <SectionHeader
+        title="Payment Operations & Verification"
+        sub={`${pendingPayments.length} pending transfer receipts awaiting admin approval`}
+      />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 32 }}>
-        <StatCard label="Total Collected" value={`₦${totalRevenue.toLocaleString()}`} accent="#c8f542" icon="₦" />
-        <StatCard label="Transactions" value={MOCK_PAYMENTS.length} icon="◎" />
-        <StatCard label="Pending" value={MOCK_PAYMENTS.filter(p => p.status === 'pending').length} accent="#fbbf24" icon="⏳" />
-        <StatCard label="Refunded" value={`₦${refunded}`} accent="#f87171" icon="↩" />
+      {actionNotice && (
+        <div style={{
+          padding: '12px 16px',
+          background: 'var(--success-dim)',
+          border: '1px solid var(--success)',
+          borderRadius: 'var(--radius)',
+          fontSize: 13,
+          color: 'var(--success)',
+          marginBottom: 20,
+          fontWeight: 500,
+        }}>
+          ✓ {actionNotice}
+        </div>
+      )}
+
+      {(reviewError || apiError) && (
+        <div style={{ padding: '12px 16px', background: 'var(--danger-dim)', border: '1px solid var(--danger)', borderRadius: 'var(--radius)', color: 'var(--danger)', fontSize: 13, marginBottom: 20 }}>
+          Notice: {reviewError || apiError}
+        </div>
+      )}
+
+      {/* KPI Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14, marginBottom: 24 }}>
+        <StatCard label="Total Payments"       value={orders.length} />
+        <StatCard label="Pending Approval"    value={pendingPayments.length} accent="var(--warning)" />
+        <StatCard label="Payment Channel"     value="100% Direct Bank Transfer" accent="var(--success)" />
       </div>
 
-      {/* Payment methods breakdown */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 16, marginBottom: 24 }}>
-        <div style={{ background: 'rgba(242,235,220,0.02)', border: '1px solid rgba(242,235,220,0.07)', padding: 28 }}>
-          <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.35)', margin: '0 0 20px', fontWeight: 500 }}>Recent Transactions</p>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid rgba(242,235,220,0.08)' }}>
-                  {['Payment ID', 'Order', 'Customer', 'Amount', 'Method', 'Status', 'Date'].map(h => (
-                    <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.35)', fontWeight: 500 }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {MOCK_PAYMENTS.map(p => (
-                  <tr key={p.id} style={{ borderBottom: '1px solid rgba(242,235,220,0.04)', transition: 'background 0.1s' }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(242,235,220,0.02)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'none'}
-                  >
-                    <td style={{ padding: '13px 14px', color: '#c8f542', fontFamily: 'monospace', fontSize: 10 }}>{p.id}</td>
-                    <td style={{ padding: '13px 14px', color: 'rgba(242,235,220,0.6)', fontFamily: 'monospace', fontSize: 10 }}>{p.order}</td>
-                    <td style={{ padding: '13px 14px', color: '#f2ebdc' }}>{p.customer}</td>
-                    <td style={{ padding: '13px 14px', color: '#f2ebdc', fontWeight: 500 }}>₦{p.amount}</td>
-                    <td style={{ padding: '13px 14px', color: 'rgba(242,235,220,0.5)', fontSize: 11 }}>{p.method}</td>
-                    <td style={{ padding: '13px 14px' }}><PayStatus status={p.status} /></td>
-                    <td style={{ padding: '13px 14px', color: 'rgba(242,235,220,0.4)' }}>{p.date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* Live Bank Transfer Approvals Queue */}
+      {pendingPayments.length > 0 && (
+        <div style={{ marginBottom: 24, background: 'var(--surface)', border: '1px solid rgba(180,83,9,0.3)', borderRadius: 'var(--radius-lg)', padding: 18 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--warning)' }} />
+            <h3 style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+              Pending Bank Transfer Approvals ({pendingPayments.length})
+            </h3>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {pendingPayments.map(p => {
+              const pid = p.paymentId ?? p.id
+              const receiptLink = p.receiptUrl || p.receipt || p.receiptPath || p.ReceiptUrl || p.attachmentUrl
+
+              return (
+                <div
+                  key={pid}
+                  style={{
+                    background: 'var(--bg)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius)',
+                    padding: '16px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 16,
+                    flexWrap: 'wrap'
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Order #{p.orderNumber ?? p.orderId ?? p.order ?? p.OrderNumber ?? p.OrderId ?? '—'}</span>
+                      <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--text-muted)' }}>Payment ID: {pid}</span>
+                      <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'var(--warning-dim)', color: 'var(--warning)', fontWeight: 600 }}>
+                        Awaiting Admin Approval
+                      </span>
+                    </div>
+                    <p style={{ margin: '0 0 6px', fontSize: 12.5, color: 'var(--text-secondary)' }}>
+                      Amount: <strong style={{ color: 'var(--text-primary)' }}>₦{(p.amount ?? p.Amount ?? 0).toLocaleString()}</strong> · Direct Bank Transfer
+                    </p>
+                    {receiptLink ? (
+                      <a
+                        href={receiptLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 5,
+                          fontSize: 12.5, color: 'var(--accent)', fontWeight: 600,
+                          textDecoration: 'none', padding: '5px 10px',
+                          background: 'var(--accent-dim)', borderRadius: 'var(--radius)',
+                          border: '1px solid rgba(196,98,45,0.25)'
+                        }}
+                      >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        View Transfer Receipt
+                      </a>
+                    ) : (
+                      <span style={{ fontSize: 11.5, color: 'var(--text-muted)', fontStyle: 'italic' }}>No receipt file attached</span>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <AdminBtn
+                      variant="secondary"
+                      disabled={processingPaymentId === pid}
+                      onClick={() => handlePaymentReview(pid, 'Approved')}
+                    >
+                      {processingPaymentId === pid ? 'Approving...' : 'Approve Payment'}
+                    </AdminBtn>
+                    <AdminBtn
+                      variant="danger"
+                      disabled={processingPaymentId === pid}
+                      onClick={() => handlePaymentReview(pid, 'Rejected')}
+                    >
+                      Reject
+                    </AdminBtn>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
+      )}
 
-        <div style={{ background: 'rgba(242,235,220,0.02)', border: '1px solid rgba(242,235,220,0.07)', padding: 28 }}>
-          <p style={{ fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(242,235,220,0.35)', margin: '0 0 20px', fontWeight: 500 }}>Payment Methods</p>
-          {[
-            { method: 'Visa', count: 3, pct: 43 },
-            { method: 'Apple Pay', count: 2, pct: 28 },
-            { method: 'PayPal', count: 2, pct: 28 },
-          ].map(m => (
-            <div key={m.method} style={{ marginBottom: 18 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontSize: 11, color: 'rgba(242,235,220,0.6)' }}>{m.method}</span>
-                <span style={{ fontSize: 11, color: '#c8f542' }}>{m.pct}%</span>
-              </div>
-              <div style={{ height: 4, background: 'rgba(242,235,220,0.07)' }}>
-                <div style={{ height: '100%', background: '#c8f542', width: `${m.pct}%`, opacity: 0.7 }} />
-              </div>
-            </div>
-          ))}
+      {/* Clean Payment Transactions Table — NO status column, NO clickable arrow column */}
+      <div style={{
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
+        borderRadius: 'var(--radius-lg)',
+        overflow: 'hidden',
+      }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+          <div>
+            <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Payment Transactions Ledger</p>
+            <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--text-secondary)' }}>All store payment records processed via Direct Bank Transfer</p>
+          </div>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>{orders.length} Payment Records</span>
+        </div>
+
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse', fontSize: 13 }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                {['Order ID', 'Customer', 'Country', 'Items', 'Total', 'Payment Method', 'Date'].map(h => (
+                  <th key={h} style={{
+                    padding: '12px 16px',
+                    textAlign: 'left',
+                    fontSize: 11.5,
+                    fontWeight: 600,
+                    color: 'var(--text-secondary)',
+                    background: '#FAFAFA',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map(o => (
+                <tr
+                  key={o.id}
+                  style={{
+                    borderBottom: '1px solid var(--border)',
+                    transition: 'background 0.12s',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#FAFAFA'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  <td style={{ padding: '13px 16px', color: 'var(--accent)', fontFamily: 'monospace', fontSize: 12, fontWeight: 600 }}>{o.id}</td>
+                  <td style={{ padding: '13px 16px', color: 'var(--text-primary)', fontWeight: 500 }}>{o.customer}</td>
+                  <td style={{ padding: '13px 16px', color: 'var(--text-secondary)' }}>{o.country}</td>
+                  <td style={{ padding: '13px 16px', color: 'var(--text-secondary)' }}>{o.items} items</td>
+                  <td style={{ padding: '13px 16px', color: 'var(--text-primary)', fontWeight: 600 }}>₦{Number(o.total || 0).toLocaleString()}</td>
+                  <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', fontSize: 12 }}>Direct Bank Transfer</td>
+                  <td style={{ padding: '13px 16px', color: 'var(--text-secondary)' }}>{o.date}</td>
+                </tr>
+              ))}
+
+              {orders.length === 0 && (
+                <tr>
+                  <td colSpan={7} style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: 13 }}>
+                    No payment records found. Live API synced.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

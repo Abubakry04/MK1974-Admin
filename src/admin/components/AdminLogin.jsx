@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAdmin } from '../context/AdminContext'
+import mkLogo from '../../assets/mk2.png'
 
 export default function AdminLogin() {
   const { adminLogin } = useAdmin()
@@ -18,76 +19,197 @@ export default function AdminLogin() {
     setLoading(false)
   }
 
-  const inputStyle = {
-    width: '100%', background: '#FAF9F6', border: '1px solid rgba(30,31,33,0.12)',
-    color: '#1E1F21', padding: '12px 16px', fontSize: 13, fontFamily: "'Inter', sans-serif",
-    outline: 'none', boxSizing: 'border-box', borderRadius: 4, transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
-  }
-
   return (
     <div style={{
-      minHeight: '100vh', background: '#FAF9F6', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: "'Inter', sans-serif", position: 'relative', overflow: 'hidden'
+      minHeight: '100vh',
+      display: 'flex',
+      fontFamily: "'DM Sans', sans-serif",
+      background: '#FAFAFA',
     }}>
-      {/* Dynamic Background Pattern */}
-      <div style={{
-        position: 'fixed', inset: 0, pointerEvents: 'none',
-        backgroundImage: 'radial-gradient(rgba(150,133,116,0.12) 1px, transparent 1px)',
-        backgroundSize: '32px 32px',
-      }} />
+      {/* Left — Brand Panel */}
+      <div
+        className="mobile-hide"
+        style={{
+          width: '42%',
+          background: '#0F0F0F',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: '48px 52px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Subtle texture layer */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: `
+            linear-gradient(rgba(196,98,45,0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(196,98,45,0.04) 1px, transparent 1px)
+          `,
+          backgroundSize: '48px 48px',
+          pointerEvents: 'none',
+        }} />
 
-      <div style={{ width: '100%', maxWidth: 440, padding: '0 24px', position: 'relative', zIndex: 1 }} className="animate-fade-in">
-        {/* Brand Header */}
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
-            <div style={{
-              width: 52, height: 52, background: 'linear-gradient(135deg, #968574 0%, #786858 100%)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 12px 28px -6px rgba(150,133,116,0.4)', borderRadius: 6
-            }}>
-              <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: 22, color: '#FAF9F6', fontStyle: 'italic' }}>MK</span>
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <p style={{ fontSize: 13, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#968574', margin: 0, fontWeight: 700 }}>MK 1974</p>
-              <p style={{ fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.5)', margin: '2px 0 0', fontWeight: 500 }}>Admin Portal</p>
-            </div>
-          </div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontStyle: 'italic', color: '#1E1F21', fontSize: 32, margin: '8px 0 0' }}>
-            Welcome Back
-          </h1>
-          <p style={{ color: 'rgba(30,31,33,0.6)', fontSize: 13, fontWeight: 400, marginTop: 8, marginBottom: 0 }}>
-            Sign in to manage your storefront dashboard
+        {/* Logo */}
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <img
+            src={mkLogo}
+            alt="MK 1974"
+            style={{ height: 44, width: 'auto', filter: 'invert(1)', opacity: 0.92 }}
+          />
+        </div>
+
+        {/* Editorial copy */}
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <p style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontWeight: 400,
+            fontSize: 38,
+            color: '#FFFFFF',
+            lineHeight: 1.25,
+            margin: '0 0 24px',
+            letterSpacing: '-0.01em',
+          }}>
+            Where craft meets<br />
+            <span style={{ color: 'var(--accent)' }}>control.</span>
+          </p>
+          <p style={{
+            fontSize: 13.5,
+            color: '#888888',
+            margin: 0,
+            lineHeight: 1.6,
+            maxWidth: 300,
+            fontWeight: 400,
+          }}>
+            Manage your catalogue, orders, and customers from one unified platform.
           </p>
         </div>
 
-        {/* Login Form */}
-        <form onSubmit={handleSubmit}>
-          <div style={{
-            background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)',
-            padding: '36px 32px', borderRadius: 8, boxShadow: '0 20px 40px -15px rgba(30,31,33,0.05)',
-            marginBottom: 20
-          }}>
+        {/* Footer */}
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <a
+            href="http://localhost:5173"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontSize: 12,
+              color: '#555555',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = '#AAAAAA'}
+            onMouseLeave={e => e.currentTarget.style.color = '#555555'}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+            View Storefront
+          </a>
+        </div>
+      </div>
+
+      {/* Right — Login Form */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '48px 32px',
+      }}>
+        <div style={{ width: '100%', maxWidth: 400 }} className="animate-fade-up">
+          {/* Mobile brand */}
+          <div className="desktop-hide" style={{ marginBottom: 40 }}>
+            <span style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontWeight: 600,
+              fontSize: 22,
+              color: '#111111',
+            }}>
+              MK 1974
+            </span>
+          </div>
+
+          {/* Heading */}
+          <div style={{ marginBottom: 36 }}>
+            <h1 style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontWeight: 600,
+              fontSize: 34,
+              color: '#111111',
+              margin: '0 0 8px',
+              letterSpacing: '-0.02em',
+            }}>
+              Sign in
+            </h1>
+            <p style={{
+              fontSize: 14,
+              color: 'var(--text-secondary)',
+              margin: 0,
+              fontWeight: 400,
+            }}>
+              Enter your credentials to access the admin panel.
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit}>
             {/* Email */}
-            <div style={{ marginBottom: 22 }}>
-              <label style={{ display: 'block', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.6)', marginBottom: 8, fontWeight: 600 }}>
-                Email Address
+            <div style={{ marginBottom: 20 }}>
+              <label style={{
+                display: 'block',
+                fontSize: 12,
+                fontWeight: 500,
+                color: '#444',
+                marginBottom: 7,
+              }}>
+                Email address
               </label>
               <input
                 id="admin-email"
                 type="email"
-                placeholder="admin@mk1974.com"
+                placeholder="you@mk1974.com"
                 value={form.email}
                 onChange={set('email')}
                 required
-                style={inputStyle}
-                onFocus={e => { e.target.style.borderColor = '#968574'; e.target.style.boxShadow = '0 0 0 3px rgba(150,133,116,0.15)'; }}
-                onBlur={e => { e.target.style.borderColor = 'rgba(30,31,33,0.12)'; e.target.style.boxShadow = 'none'; }}
+                style={{
+                  width: '100%',
+                  background: '#FFFFFF',
+                  border: '1px solid var(--border-strong)',
+                  color: '#111',
+                  padding: '11px 14px',
+                  fontSize: 14,
+                  fontFamily: "'DM Sans', sans-serif",
+                  outline: 'none',
+                  borderRadius: 'var(--radius)',
+                  transition: 'border-color 0.2s, box-shadow 0.2s',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={e => {
+                  e.target.style.borderColor = 'var(--accent)'
+                  e.target.style.boxShadow = '0 0 0 3px rgba(196,98,45,0.1)'
+                }}
+                onBlur={e => {
+                  e.target.style.borderColor = 'var(--border-strong)'
+                  e.target.style.boxShadow = 'none'
+                }}
               />
             </div>
 
             {/* Password */}
             <div style={{ marginBottom: 28 }}>
-              <label style={{ display: 'block', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(30,31,33,0.6)', marginBottom: 8, fontWeight: 600 }}>
+              <label style={{
+                display: 'block',
+                fontSize: 12,
+                fontWeight: 500,
+                color: '#444',
+                marginBottom: 7,
+              }}>
                 Password
               </label>
               <input
@@ -97,43 +219,84 @@ export default function AdminLogin() {
                 value={form.password}
                 onChange={set('password')}
                 required
-                style={inputStyle}
-                onFocus={e => { e.target.style.borderColor = '#968574'; e.target.style.boxShadow = '0 0 0 3px rgba(150,133,116,0.15)'; }}
-                onBlur={e => { e.target.style.borderColor = 'rgba(30,31,33,0.12)'; e.target.style.boxShadow = 'none'; }}
+                style={{
+                  width: '100%',
+                  background: '#FFFFFF',
+                  border: '1px solid var(--border-strong)',
+                  color: '#111',
+                  padding: '11px 14px',
+                  fontSize: 14,
+                  fontFamily: "'DM Sans', sans-serif",
+                  outline: 'none',
+                  borderRadius: 'var(--radius)',
+                  transition: 'border-color 0.2s, box-shadow 0.2s',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={e => {
+                  e.target.style.borderColor = 'var(--accent)'
+                  e.target.style.boxShadow = '0 0 0 3px rgba(196,98,45,0.1)'
+                }}
+                onBlur={e => {
+                  e.target.style.borderColor = 'var(--border-strong)'
+                  e.target.style.boxShadow = 'none'
+                }}
               />
             </div>
 
+            {/* Error */}
             {error && (
               <div style={{
-                background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
-                padding: '12px 16px', marginBottom: 24, fontSize: 12, color: '#dc2626', borderRadius: 4
+                background: 'var(--danger-dim)',
+                border: '1px solid rgba(208,49,49,0.2)',
+                padding: '11px 14px',
+                marginBottom: 20,
+                fontSize: 13,
+                color: 'var(--danger)',
+                borderRadius: 'var(--radius)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
               }}>
-                ⚠️ {error}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                {error}
               </div>
             )}
 
+            {/* Submit */}
             <button
               id="admin-login-btn"
               type="submit"
               disabled={loading}
               style={{
-                width: '100%', background: loading ? '#b2aca3' : '#1E1F21', color: '#FAF9F6',
-                border: 'none', padding: '14px 24px', fontSize: 11, fontWeight: 600,
-                letterSpacing: '0.25em', textTransform: 'uppercase', cursor: loading ? 'not-allowed' : 'pointer',
-                fontFamily: "'Inter', sans-serif", borderRadius: 4, transition: 'all 0.2s',
-                boxShadow: loading ? 'none' : '0 4px 12px rgba(30,31,33,0.15)'
+                width: '100%',
+                background: loading ? '#B8A898' : 'var(--accent)',
+                color: '#FFFFFF',
+                border: 'none',
+                padding: '13px 24px',
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                fontFamily: "'DM Sans', sans-serif",
+                borderRadius: 'var(--radius)',
+                transition: 'background 0.2s, transform 0.15s',
+                letterSpacing: '0.01em',
               }}
-              onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#968574'; }}
-              onMouseLeave={e => { if (!loading) e.currentTarget.style.background = '#1E1F21'; }}
+              onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#A8501F' }}
+              onMouseLeave={e => { if (!loading) e.currentTarget.style.background = 'var(--accent)' }}
             >
-              {loading ? 'Authenticating…' : 'Sign In to Control Panel'}
+              {loading ? 'Signing in…' : 'Sign in to Admin'}
             </button>
-          </div>
-        </form>
+          </form>
 
-        <p style={{ textAlign: 'center', marginTop: 24, fontSize: 11, color: 'rgba(30,31,33,0.5)', letterSpacing: '0.05em' }}>
-          <a href="http://localhost:5173" style={{ color: '#968574', textDecoration: 'none', fontWeight: 600 }}>← Back to Storefront</a>
-        </p>
+          {/* Mobile storefront link */}
+          <p className="desktop-hide" style={{ textAlign: 'center', marginTop: 24, fontSize: 13, color: 'var(--text-secondary)' }}>
+            <a href="http://localhost:5173" style={{ color: 'var(--accent)', fontWeight: 500 }}>← Back to Storefront</a>
+          </p>
+        </div>
       </div>
     </div>
   )
