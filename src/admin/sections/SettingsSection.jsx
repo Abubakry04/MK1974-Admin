@@ -177,7 +177,7 @@ export default function SettingsSection() {
   const { adminUser, adminLogout } = useAdmin()
   const [activeTab, setActiveTab] = useState('general')
 
-  const tabs = ['general', 'store', 'catalogue', 'notifications', 'security', 'api']
+  const tabs = ['general', 'catalogue']
 
   return (
     <div className="animate-fade-in">
@@ -210,7 +210,7 @@ export default function SettingsSection() {
             <span style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 600 }}>{adminUser?.role}</span>
           </SettingRow>
         </div>
-        <AdminBtn variant="secondary" id="save-general-settings">Save Profile</AdminBtn>
+        {/* <AdminBtn variant="secondary" id="save-general-settings">Save Profile</AdminBtn> */}
         </div>
       )}
 

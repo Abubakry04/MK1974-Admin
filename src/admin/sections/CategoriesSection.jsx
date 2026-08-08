@@ -114,8 +114,7 @@ export default function CategoriesSection() {
           }} className="hover-lift">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <div>
-                <p style={{ fontSize: 16, fontWeight: 600, color: '#1E1F21', margin: '0 0 2px' }}>{cat.name}</p>
-                <p style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#968574', margin: 0, fontWeight: 700 }}>ID: #{cat.id}</p>
+                <p style={{ fontSize: 16, fontWeight: 600, color: '#1E1F21', margin: 0 }}>{cat.name}</p>
               </div>
               <button
                 id={`delete-cat-${cat.id}`}

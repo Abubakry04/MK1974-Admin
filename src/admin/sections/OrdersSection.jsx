@@ -29,7 +29,7 @@ const filterTabStyle = (active) => ({
 })
 
 export default function OrdersSection() {
-  const { orders = [], updateOrderStatus, apiLoading, apiError } = useAdmin()
+  const { orders = [], updateOrderStatus, setActiveSection, apiLoading, apiError } = useAdmin()
   const [filter, setFilter] = useState('all')
   const [selected, setSelected] = useState(null)
   const [statusUpdatingId, setStatusUpdatingId] = useState(null)
@@ -98,7 +98,7 @@ export default function OrdersSection() {
           width: 32, height: 32, border: '3px solid var(--border)', borderTopColor: 'var(--accent)',
           borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px'
         }} />
-        <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>Loading orders from API (/api/Order)...</p>
+        <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>Loading orders...</p>
       </div>
     )
   }
@@ -107,7 +107,7 @@ export default function OrdersSection() {
     <div className="animate-fade-up">
       <SectionHeader
         title="Orders Management"
-        sub={`${orders.length} total orders fetched from /api/Order · ${statusCounts.PendingPayment + statusCounts.PaymentSubmitted} awaiting payment`}
+        sub={`${orders.length} total orders · ${statusCounts.PendingPayment + statusCounts.PaymentSubmitted} awaiting payment`}
       />
 
       {actionNotice && (
@@ -167,10 +167,10 @@ export default function OrdersSection() {
           overflow: 'hidden',
         }}>
           <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-            <table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse', fontSize: 13 }}>
+            <table style={{ width: '100%', minWidth: 600, borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                  {['Order ID', 'Customer', 'Country', 'Items', 'Total', 'Status', 'Date', ''].map(h => (
+                  {['S/N', 'Customer', 'Items', 'Total', 'Status', 'Date', ''].map(h => (
                     <th key={h} style={{
                       padding: '12px 14px',
                       textAlign: 'left',
@@ -186,7 +186,7 @@ export default function OrdersSection() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(o => (
+                {filtered.map((o, index) => (
                   <tr
                     key={o.id}
                     style={{
@@ -201,7 +201,7 @@ export default function OrdersSection() {
                       style={{ padding: '13px 14px', color: 'var(--accent)', fontFamily: 'monospace', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
                       onClick={() => handleSelectOrder(o.id)}
                     >
-                      {o.id}
+                      {index + 1}
                     </td>
                     <td
                       style={{ padding: '13px 14px', color: 'var(--text-primary)', fontWeight: 500, cursor: 'pointer' }}
@@ -209,7 +209,6 @@ export default function OrdersSection() {
                     >
                       {o.customer}
                     </td>
-                    <td style={{ padding: '13px 14px', color: 'var(--text-secondary)' }}>{o.country}</td>
                     <td style={{ padding: '13px 14px', color: 'var(--text-secondary)' }}>{o.items} items</td>
                     <td style={{ padding: '13px 14px', color: 'var(--text-primary)', fontWeight: 600 }}>₦{Number(o.total || 0).toLocaleString()}</td>
                     
@@ -246,8 +245,8 @@ export default function OrdersSection() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={8} style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: 13 }}>
-                      No orders match this filter. Synced with /api/Order.
+                    <td colSpan={7} style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: 13 }}>
+                      No orders match this filter.
                     </td>
                   </tr>
                 )}

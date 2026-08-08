@@ -423,8 +423,36 @@ export default function AdminLayout() {
         {/* Page content */}
         <main
           className="admin-main-container"
-          style={{ padding: '32px 36px 80px', maxWidth: 1440, width: '100%', margin: '0 auto', flex: 1 }}
+          style={{ padding: '32px 36px 80px', maxWidth: 1440, width: '100%', margin: '0 auto', flex: 1, position: 'relative' }}
         >
+          {apiLoading && (
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'rgba(255, 255, 255, 0.75)',
+              backdropFilter: 'blur(3px)',
+              zIndex: 50,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: 360,
+              gap: 14,
+              borderRadius: 'var(--radius-lg)',
+            }} className="animate-fade-in">
+              <div style={{
+                width: 38,
+                height: 38,
+                border: '3px solid var(--border-strong)',
+                borderTopColor: 'var(--accent)',
+                borderRadius: '50%',
+                animation: 'spin 0.75s linear infinite',
+              }} />
+              <p style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: 'var(--text-primary)', fontFamily: "'DM Sans', sans-serif" }}>
+                Syncing live data...
+              </p>
+            </div>
+          )}
           <ActiveSection />
         </main>
       </div>

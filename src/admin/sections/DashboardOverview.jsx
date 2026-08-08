@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useAdmin } from '../context/AdminContext'
 
 // ─── Stat Card ─────────────────────────────────────────────────────────────────
@@ -57,6 +58,15 @@ export function StatCard({ label, value, sub, accent, growth }) {
 
 // ─── Section Header ────────────────────────────────────────────────────────────
 export function SectionHeader({ title, sub, action }) {
+  const { fetchAllApiData } = useAdmin()
+  const [refreshing, setRefreshing] = useState(false)
+
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    await fetchAllApiData(true)
+    setTimeout(() => setRefreshing(false), 400)
+  }
+
   return (
     <div style={{
       display: 'flex',
@@ -88,7 +98,47 @@ export function SectionHeader({ title, sub, action }) {
           </p>
         )}
       </div>
-      {action && <div style={{ flexShrink: 0 }}>{action}</div>}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '7px 14px',
+            fontSize: 12.5,
+            fontWeight: 500,
+            color: 'var(--text-primary)',
+            background: 'var(--surface)',
+            border: '1px solid var(--border-strong)',
+            borderRadius: 'var(--radius)',
+            cursor: refreshing ? 'default' : 'pointer',
+            transition: 'all 0.15s',
+            fontFamily: "'DM Sans', sans-serif",
+            boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+          }}
+          title="Refresh live data"
+        >
+          <svg
+            width="13" height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{
+              animation: refreshing ? 'spin 0.7s linear infinite' : 'none',
+              transformOrigin: 'center'
+            }}
+          >
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+          {refreshing ? 'Syncing...' : 'Refresh'}
+        </button>
+        {action}
+      </div>
     </div>
   )
 }
@@ -255,11 +305,13 @@ export function AdminBtn({ children, onClick, variant = 'primary', id, disabled 
 }
 
 // ─── Bar Chart ────────────────────────────────────────────────────────────────
-export function BarChart({ data, labels, color = 'var(--accent)', height = 160, prefix = '' }) {
-  const max = Math.max(...data, 1)
+export function BarChart({ data = [], labels = [], color = 'var(--accent)', height = 160, prefix = '' }) {
+  const safeData = Array.isArray(data) ? data : []
+  const safeLabels = Array.isArray(labels) ? labels : []
+  const max = Math.max(...safeData, 1)
   return (
     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height, paddingTop: 20 }}>
-      {data.map((v, i) => (
+      {safeData.map((v, i) => (
         <div
           key={i}
           style={{
@@ -277,7 +329,7 @@ export function BarChart({ data, labels, color = 'var(--accent)', height = 160, 
               width: '100%',
               background: color,
               borderRadius: '3px 3px 0 0',
-              height: `${(v / max) * 100}%`,
+              height: `${((v || 0) / max) * 100}%`,
               minHeight: 4,
               transition: 'height 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
               position: 'relative',
@@ -313,7 +365,7 @@ export function BarChart({ data, labels, color = 'var(--accent)', height = 160, 
                 pointerEvents: 'none',
               }}
             >
-              {prefix}{v.toLocaleString()}
+              {prefix}{(v || 0).toLocaleString()}
             </div>
           </div>
           <span style={{
@@ -322,7 +374,7 @@ export function BarChart({ data, labels, color = 'var(--accent)', height = 160, 
             fontWeight: 400,
             textAlign: 'center',
           }}>
-            {labels[i]}
+            {safeLabels[i] || ''}
           </span>
         </div>
       ))}

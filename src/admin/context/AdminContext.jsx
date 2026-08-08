@@ -1,9 +1,27 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react'
 import * as api from '../api/apiClient'
 
 // ─── Admin Context ─────────────────────────────────────────────────────────────
 export const AdminContext = createContext(null)
 export const useAdmin = () => useContext(AdminContext)
+
+const getSectionFromPath = (path) => {
+  const clean = (path || '').toLowerCase().replace(/^\/+|\/+$/g, '')
+  if (!clean || clean === 'dashboard') return 'dashboard'
+  if (clean === 'review' || clean === 'reviews') return 'reviews'
+  if (clean === 'product' || clean === 'products') return 'products'
+  if (clean === 'category' || clean === 'categories') return 'categories'
+  if (clean === 'order' || clean === 'orders') return 'orders'
+  if (clean === 'customer' || clean === 'customers') return 'customers'
+  if (clean === 'payment' || clean === 'payments') return 'payments'
+  if (clean === 'discount' || clean === 'discounts') return 'discounts'
+  if (clean === 'setting' || clean === 'settings') return 'settings'
+  if (clean === 'staff') return 'staff'
+  if (clean === 'inventory') return 'inventory'
+  if (clean === 'shipping') return 'shipping'
+  if (clean === 'analytics') return 'analytics'
+  return clean
+}
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function AdminProvider({ children }) {
@@ -12,9 +30,37 @@ export function AdminProvider({ children }) {
     try { return JSON.parse(localStorage.getItem('mk1974_admin') || 'null') } catch { return null }
   })
 
-  // ── UI state ──
-  const [activeSection, setActiveSection] = useState('dashboard')
+  // ── UI state & URL Path Routing ──
+  const [activeSection, setActiveSectionState] = useState(() => {
+    try {
+      const urlSection = getSectionFromPath(window.location.pathname)
+      if (urlSection && urlSection !== 'dashboard') return urlSection
+      return localStorage.getItem('mk1974_admin_active_section') || 'dashboard'
+    } catch {
+      return 'dashboard'
+    }
+  })
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+
+  const setActiveSection = useCallback((section) => {
+    setActiveSectionState(section)
+    try {
+      localStorage.setItem('mk1974_admin_active_section', section)
+      const targetPath = section === 'dashboard' ? '/' : `/${section}`
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState(null, '', targetPath)
+      }
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const section = getSectionFromPath(window.location.pathname)
+      setActiveSectionState(section)
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
 
   // ── Live API data ──
   const [products, setProducts] = useState([])
@@ -27,15 +73,18 @@ export function AdminProvider({ children }) {
   // ── Live arrays only — NO dummy/mock fallback data ──
   const [orders, setOrders] = useState(() => {
     try {
-      const localOrders = JSON.parse(localStorage.getItem('mk1974_orders') || '[]')
+      const stored = localStorage.getItem('mk1974_orders')
+      if (!stored) return []
+      const localOrders = JSON.parse(stored)
+      if (!Array.isArray(localOrders)) return []
       return localOrders.map(o => ({
-        id: o.id,
+        id: String(o.id || ''),
         customer: `${o.firstName || ''} ${o.lastName || ''}`.trim() || 'Customer',
         email: o.email || 'N/A',
-        items: o.items ? o.items.reduce((sum, item) => sum + (item.qty || 1), 0) : 1,
-        total: o.total || 0,
+        items: o.items && Array.isArray(o.items) ? o.items.reduce((sum, item) => sum + (item.qty || 1), 0) : 1,
+        total: Number(o.total) || 0,
         status: o.status || 'pendingpayment',
-        date: o.createdAt ? o.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+        date: o.createdAt ? String(o.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
         country: o.country || 'Nigeria'
       }))
     } catch {
@@ -51,8 +100,8 @@ export function AdminProvider({ children }) {
   const [dashboardOverview, setDashboardOverview] = useState(null)
   const [pendingPayments, setPendingPayments] = useState([])
 
-  const fetchAllApiData = useCallback(async () => {
-    setApiLoading(true)
+  const fetchAllApiData = useCallback(async (isInitial = false) => {
+    if (isInitial) setApiLoading(true)
     setApiError(null)
     try {
       const [prods, cats, cols, szs, custs, ords, dashSummary, dashOverview, pendingPays] = await Promise.all([
@@ -87,10 +136,25 @@ export function AdminProvider({ children }) {
       const parsedCols = extractArray(cols)
       const parsedSzs = extractArray(szs)
       const parsedPays = extractArray(pendingPays)
+      parsedPays.sort((a, b) => {
+        const idA = Number(a.paymentId ?? a.id ?? a.paymentReviewId ?? 0)
+        const idB = Number(b.paymentId ?? b.id ?? b.paymentReviewId ?? 0)
+        if (idB && idA && idB !== idA) return idB - idA
+
+        const dateA = new Date(a.createdAt || a.createdDate || a.date || 0).getTime()
+        const dateB = new Date(b.createdAt || b.createdDate || b.date || 0).getTime()
+        return dateB - dateA
+      })
       
       setPendingPayments(parsedPays)
       
-      setCustomers(parsedCusts.map(c => ({
+      const onlyCustomerUsers = parsedCusts.filter(c => {
+        if (!c.role) return true
+        const r = String(c.role).toLowerCase().trim()
+        return r === 'customer' || r === '0' || r === 'user' || r === 'client'
+      })
+
+      setCustomers(onlyCustomerUsers.map(c => ({
         ...c,
         id: c.userId ?? c.id,
         firstName: c.firstName || '',
@@ -101,8 +165,8 @@ export function AdminProvider({ children }) {
         orders: c.orders || 0,
         totalSpent: c.totalSpent || 0,
         joined: c.createdAt ? c.createdAt.split('T')[0] : 'Recently',
-        status: c.status || (c.role === 'Admin' || c.role === 1 || String(c.role).toLowerCase() === 'admin' ? 'vip' : 'active'),
-        role: c.role ?? 'Customer'
+        status: c.status || 'active',
+        role: 'Customer'
       })))
       
       if (parsedOrds.length > 0) {
@@ -183,12 +247,12 @@ export function AdminProvider({ children }) {
     } catch (err) {
       setApiError(err.message || 'Failed to fetch API data.')
     } finally {
-      setApiLoading(false)
+      if (isInitial) setApiLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    fetchAllApiData()
+    fetchAllApiData(true)
   }, [fetchAllApiData])
 
   // ── Auth helpers ──
@@ -218,17 +282,34 @@ export function AdminProvider({ children }) {
     }
   }, [fetchAllApiData])
 
+  const adminRegister = useCallback(async (userData) => {
+    try {
+      await api.auth.register({
+        email: userData.email,
+        password: userData.password,
+        firstName: userData.firstName || userData.name?.split(' ')[0] || 'Admin',
+        lastName: userData.lastName || userData.name?.split(' ')[1] || 'User',
+        role: 'Admin',
+      })
+      // Auto login after successful registration
+      return await adminLogin({ email: userData.email, password: userData.password })
+    } catch (err) {
+      return { success: false, error: err.message || 'Registration failed.' }
+    }
+  }, [adminLogin])
+
   const adminLogout = useCallback(() => {
     setAdminUser(null)
     api.setToken(null)
     localStorage.removeItem('mk1974_admin')
     localStorage.removeItem('mk1974_admin_token')
+    localStorage.removeItem('mk1974_admin_active_section')
     setProducts([])
     setCategories([])
     setColors([])
     setSizes([])
     setActiveSection('dashboard')
-  }, [])
+  }, [setActiveSection])
 
   // Auto-logout when session expires or backend returns HTTP 401
   useEffect(() => {
@@ -352,17 +433,74 @@ export function AdminProvider({ children }) {
   }, [fetchAllApiData])
 
   // ─── Stats ────────────────────────────────────────────────────────────────
+  const calculatedRevenue = orders
+    .filter(o => {
+      const s = String(o.status || '').toLowerCase()
+      return s !== 'cancelled' && s !== 'refunded' && s !== 'pendingpayment' && s !== 'pending' && s !== 'awaiting_payment'
+    })
+    .reduce((s, o) => s + (Number(o.total || o.totalAmount) || 0), 0)
+
+  const pendingOrdersCount = orders.filter(o => {
+    const s = String(o.status || '').toLowerCase()
+    return ['pending', 'pendingpayment', 'paymentsubmitted', 'submitted', 'awaiting_payment'].includes(s)
+  }).length
+
   const stats = {
-    totalRevenue: dashboardSummary?.totalRevenue ?? orders.filter(o => o.status === 'paid').reduce((s, o) => s + o.total, 0),
-    totalOrders: dashboardSummary?.totalOrders ?? orders.length,
-    totalCustomers: dashboardSummary?.totalCustomers ?? customers.length,
-    totalProducts: dashboardSummary?.totalProducts ?? products.length,
-    pendingOrders: dashboardSummary?.pendingOrdersCount ?? orders.filter(o => ['pending', 'pendingpayment'].includes(o.status)).length,
+    totalRevenue: (dashboardSummary?.totalRevenue && dashboardSummary.totalRevenue > 0) ? dashboardSummary.totalRevenue : calculatedRevenue,
+    totalOrders: Math.max(dashboardSummary?.totalOrders || 0, orders.length),
+    totalCustomers: customers.length,
+    totalProducts: products.length,
+    pendingOrders: pendingOrdersCount,
   }
+
+  // ─── Analytics ────────────────────────────────────────────────────────────
+  const analytics = useMemo(() => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    const monthlyRevenue = Array(12).fill(0)
+    const monthlyOrders = Array(12).fill(0)
+
+    orders.forEach(o => {
+      const s = String(o.status || '').toLowerCase()
+      if (s !== 'cancelled' && s !== 'refunded') {
+        const rawDate = o.rawDate || o.date
+        if (rawDate) {
+          try {
+            const d = new Date(rawDate)
+            if (!isNaN(d.getTime())) {
+              const mIdx = d.getMonth()
+              if (s !== 'pendingpayment' && s !== 'pending' && s !== 'awaiting_payment') {
+                monthlyRevenue[mIdx] += (Number(o.total || o.totalAmount) || 0)
+              }
+              monthlyOrders[mIdx] += 1
+            }
+          } catch {}
+        }
+      }
+    })
+
+    const rawTop = dashboardOverview?.topProducts || dashboardOverview?.topSellingProducts || []
+
+    return {
+      revenue: (Array.isArray(dashboardOverview?.monthlyRevenue) && dashboardOverview.monthlyRevenue.some(v => v > 0))
+        ? dashboardOverview.monthlyRevenue
+        : monthlyRevenue,
+      orders: (Array.isArray(dashboardOverview?.monthlyOrders) && dashboardOverview.monthlyOrders.some(v => v > 0))
+        ? dashboardOverview.monthlyOrders
+        : monthlyOrders,
+      months: dashboardOverview?.months || months,
+      topProducts: Array.isArray(rawTop) ? rawTop : [],
+      traffic: [
+        { source: 'Direct Storefront', pct: 65 },
+        { source: 'Organic Search', pct: 20 },
+        { source: 'Social Media', pct: 15 },
+      ],
+    }
+  }, [dashboardOverview, orders])
 
   const value = {
     adminUser,
     adminLogin,
+    adminRegister,
     adminLogout,
     activeSection,
     setActiveSection,
@@ -395,6 +533,7 @@ export function AdminProvider({ children }) {
     pendingPayments,
     dashboardSummary,
     dashboardOverview,
+    analytics,
     updateOrderStatus,
     approveReview,
     deleteReview,

@@ -21,6 +21,23 @@ export default function PaymentsSection() {
     }
   }
 
+  const sortedPendingPayments = [...pendingPayments].sort((a, b) => {
+    const idA = Number(a.paymentId ?? a.id ?? a.paymentReviewId ?? 0)
+    const idB = Number(b.paymentId ?? b.id ?? b.paymentReviewId ?? 0)
+    if (idB && idA && idB !== idA) return idB - idA
+
+    const dateA = new Date(a.createdAt || a.createdDate || a.date || 0).getTime()
+    const dateB = new Date(b.createdAt || b.createdDate || b.date || 0).getTime()
+    return dateB - dateA
+  })
+
+  const sortedOrders = [...orders].sort((a, b) => {
+    const dateA = new Date(a.rawDate || a.date || 0).getTime()
+    const dateB = new Date(b.rawDate || b.date || 0).getTime()
+    if (dateB !== dateA) return dateB - dateA
+    return Number(b.id || 0) - Number(a.id || 0)
+  })
+
   if (apiLoading) {
     return (
       <div className="animate-fade-in" style={{ padding: '60px 20px', textAlign: 'center' }}>
@@ -79,7 +96,7 @@ export default function PaymentsSection() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {pendingPayments.map(p => {
+            {sortedPendingPayments.map(p => {
               const pid = p.paymentId ?? p.id
               const receiptLink = p.receiptUrl || p.receipt || p.receiptPath || p.ReceiptUrl || p.attachmentUrl
 
@@ -101,7 +118,6 @@ export default function PaymentsSection() {
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Order #{p.orderNumber ?? p.orderId ?? p.order ?? p.OrderNumber ?? p.OrderId ?? '—'}</span>
-                      <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--text-muted)' }}>Payment ID: {pid}</span>
                       <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'var(--warning-dim)', color: 'var(--warning)', fontWeight: 600 }}>
                         Awaiting Admin Approval
                       </span>
@@ -172,7 +188,7 @@ export default function PaymentsSection() {
           <table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                {['Order ID', 'Customer', 'Country', 'Items', 'Total', 'Payment Method', 'Date'].map(h => (
+                {['S/N', 'Customer', 'Items', 'Total', 'Payment Method', 'Date'].map(h => (
                   <th key={h} style={{
                     padding: '12px 16px',
                     textAlign: 'left',
@@ -188,7 +204,7 @@ export default function PaymentsSection() {
               </tr>
             </thead>
             <tbody>
-              {orders.map(o => (
+              {sortedOrders.map((o, index) => (
                 <tr
                   key={o.id}
                   style={{
@@ -198,9 +214,8 @@ export default function PaymentsSection() {
                   onMouseEnter={e => e.currentTarget.style.background = '#FAFAFA'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  <td style={{ padding: '13px 16px', color: 'var(--accent)', fontFamily: 'monospace', fontSize: 12, fontWeight: 600 }}>{o.id}</td>
+                  <td style={{ padding: '13px 16px', color: 'var(--accent)', fontFamily: 'monospace', fontSize: 12, fontWeight: 600 }}>{index + 1}</td>
                   <td style={{ padding: '13px 16px', color: 'var(--text-primary)', fontWeight: 500 }}>{o.customer}</td>
-                  <td style={{ padding: '13px 16px', color: 'var(--text-secondary)' }}>{o.country}</td>
                   <td style={{ padding: '13px 16px', color: 'var(--text-secondary)' }}>{o.items} items</td>
                   <td style={{ padding: '13px 16px', color: 'var(--text-primary)', fontWeight: 600 }}>₦{Number(o.total || 0).toLocaleString()}</td>
                   <td style={{ padding: '13px 16px', color: 'var(--text-secondary)', fontSize: 12 }}>Direct Bank Transfer</td>
@@ -210,8 +225,8 @@ export default function PaymentsSection() {
 
               {orders.length === 0 && (
                 <tr>
-                  <td colSpan={7} style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: 13 }}>
-                    No payment records found. Live API synced.
+                  <td colSpan={6} style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: 13 }}>
+                    No payment records found.
                   </td>
                 </tr>
               )}
