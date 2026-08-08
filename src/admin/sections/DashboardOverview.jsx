@@ -72,33 +72,36 @@ export function SectionHeader({ title, sub, action }) {
       display: 'flex',
       alignItems: 'flex-start',
       justifyContent: 'space-between',
-      marginBottom: 28,
-      gap: 16,
+      marginBottom: 24,
+      gap: 12,
+      flexWrap: 'wrap',
+      width: '100%',
     }}>
-      <div>
+      <div style={{ minWidth: 0, flex: '1 1 220px' }}>
         <h2 style={{
           fontFamily: "'Cormorant Garamond', serif",
           fontWeight: 600,
           color: 'var(--text-primary)',
-          fontSize: 28,
+          fontSize: 26,
           margin: 0,
           letterSpacing: '-0.02em',
           lineHeight: 1.15,
+          wordBreak: 'break-word',
         }}>
           {title}
         </h2>
         {sub && (
           <p style={{
             color: 'var(--text-secondary)',
-            fontSize: 13.5,
-            margin: '5px 0 0',
+            fontSize: 13,
+            margin: '4px 0 0',
             fontWeight: 400,
           }}>
             {sub}
           </p>
         )}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <button
           onClick={handleRefresh}
           disabled={refreshing}
@@ -106,8 +109,8 @@ export function SectionHeader({ title, sub, action }) {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
-            padding: '7px 14px',
-            fontSize: 12.5,
+            padding: '7px 12px',
+            fontSize: 12,
             fontWeight: 500,
             color: 'var(--text-primary)',
             background: 'var(--surface)',
@@ -117,6 +120,7 @@ export function SectionHeader({ title, sub, action }) {
             transition: 'all 0.15s',
             fontFamily: "'DM Sans', sans-serif",
             boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+            whiteSpace: 'nowrap',
           }}
           title="Refresh live data"
         >
@@ -148,11 +152,12 @@ export function Table({ headers, rows }) {
   return (
     <div style={{
       overflowX: 'auto',
+      WebkitOverflowScrolling: 'touch',
       background: 'var(--surface)',
       border: '1px solid var(--border)',
       borderRadius: 'var(--radius-lg)',
     }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+      <table style={{ width: '100%', minWidth: 540, borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
           <tr style={{ borderBottom: '1px solid var(--border)' }}>
             {headers.map(h => (
@@ -305,79 +310,94 @@ export function AdminBtn({ children, onClick, variant = 'primary', id, disabled 
 }
 
 // ─── Bar Chart ────────────────────────────────────────────────────────────────
-export function BarChart({ data = [], labels = [], color = 'var(--accent)', height = 160, prefix = '' }) {
+export function BarChart({ data = [], labels = [], color = 'var(--accent)', height = 210, prefix = '' }) {
   const safeData = Array.isArray(data) ? data : []
   const safeLabels = Array.isArray(labels) ? labels : []
   const max = Math.max(...safeData, 1)
+
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height, paddingTop: 20 }}>
-      {safeData.map((v, i) => (
-        <div
-          key={i}
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 6,
-            height: '100%',
-            justifyContent: 'flex-end',
-          }}
-        >
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height, paddingTop: 36, paddingBottom: 6 }}>
+      {safeData.map((v, i) => {
+        const val = v || 0
+        const isMax = val > 0 && val === max
+
+        return (
           <div
+            key={i}
             style={{
-              width: '100%',
-              background: color,
-              borderRadius: '3px 3px 0 0',
-              height: `${((v || 0) / max) * 100}%`,
-              minHeight: 4,
-              transition: 'height 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 6,
+              height: '100%',
+              justifyContent: 'flex-end',
               position: 'relative',
-              opacity: 0.85,
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.opacity = '1'
-              const tip = e.currentTarget.querySelector('.tip')
-              if (tip) tip.style.display = 'block'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.opacity = '0.85'
-              const tip = e.currentTarget.querySelector('.tip')
-              if (tip) tip.style.display = 'none'
             }}
           >
             <div
+              style={{
+                width: '100%',
+                background: color,
+                borderRadius: '3px 3px 0 0',
+                height: `${(val / max) * 100}%`,
+                minHeight: 4,
+                transition: 'height 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+                position: 'relative',
+                opacity: 0.88,
+                cursor: 'pointer',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.opacity = '1'
+                const tip = e.currentTarget.parentNode.querySelector('.tip')
+                if (tip) tip.style.display = 'block'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.opacity = '0.88'
+                const tip = e.currentTarget.parentNode.querySelector('.tip')
+                if (tip && !isMax) tip.style.display = 'none'
+              }}
+              onTouchStart={e => {
+                const tip = e.currentTarget.parentNode.querySelector('.tip')
+                if (tip) tip.style.display = tip.style.display === 'block' ? 'none' : 'block'
+              }}
+            />
+
+            {/* Tooltip Figure — Always visible for positive values & highest bar */}
+            <div
               className="tip"
               style={{
-                display: 'none',
+                display: (isMax || val > 0) ? 'block' : 'none',
                 position: 'absolute',
-                bottom: '110%',
+                top: -28,
                 left: '50%',
                 transform: 'translateX(-50%)',
-                background: '#111',
-                padding: '4px 9px',
+                background: '#0F0F0F',
+                padding: '3px 7px',
                 borderRadius: 4,
-                fontSize: 11,
-                fontWeight: 600,
+                fontSize: 10.5,
+                fontWeight: 700,
                 color: '#FFFFFF',
                 whiteSpace: 'nowrap',
-                zIndex: 10,
+                zIndex: 30,
                 pointerEvents: 'none',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
               }}
             >
-              {prefix}{(v || 0).toLocaleString()}
+              {prefix}{val.toLocaleString()}
             </div>
+
+            <span style={{
+              fontSize: 10,
+              color: 'var(--text-muted)',
+              fontWeight: 400,
+              textAlign: 'center',
+            }}>
+              {safeLabels[i] || ''}
+            </span>
           </div>
-          <span style={{
-            fontSize: 10,
-            color: 'var(--text-muted)',
-            fontWeight: 400,
-            textAlign: 'center',
-          }}>
-            {safeLabels[i] || ''}
-          </span>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
@@ -394,7 +414,7 @@ export default function DashboardOverview() {
         title={`Welcome back, ${adminUser?.name?.split(' ')[0] || 'Admin'}`}
         sub="Here's what's happening with your store today."
         action={
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <AdminBtn variant="secondary" onClick={() => setActiveSection('products')}>
               + Add Product
             </AdminBtn>
@@ -408,14 +428,14 @@ export default function DashboardOverview() {
       {/* KPI Cards */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-        gap: 16,
-        marginBottom: 28,
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+        gap: 12,
+        marginBottom: 24,
       }}>
         <StatCard
           label="Total Revenue"
           value={`₦${stats?.totalRevenue ? stats.totalRevenue.toLocaleString() : '0'}`}
-          sub="Delivered & paid orders"
+          sub="Delivered & paid"
           growth="12.4%"
           accent="var(--accent)"
         />
@@ -428,13 +448,13 @@ export default function DashboardOverview() {
         <StatCard
           label="Customers"
           value={stats?.totalCustomers || 0}
-          sub="Registered accounts"
+          sub="Registered"
           growth="15.2%"
         />
         <StatCard
           label="Products"
           value={stats?.totalProducts || 0}
-          sub="Active catalogue items"
+          sub="Active items"
         />
       </div>
 
@@ -449,7 +469,7 @@ export default function DashboardOverview() {
         <div style={{
           background: 'var(--surface)',
           border: '1px solid var(--border)',
-          padding: '24px 28px',
+          padding: '20px 22px',
           borderRadius: 'var(--radius-lg)',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
@@ -470,14 +490,16 @@ export default function DashboardOverview() {
               +18.5%
             </span>
           </div>
-          <BarChart data={analytics?.revenue || []} labels={analytics?.months || []} prefix="₦" height={180} />
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 4 }}>
+            <BarChart data={analytics?.revenue || []} labels={analytics?.months || []} prefix="₦" height={180} />
+          </div>
         </div>
 
         {/* Top Products */}
         <div style={{
           background: 'var(--surface)',
           border: '1px solid var(--border)',
-          padding: '24px 28px',
+          padding: '20px 22px',
           borderRadius: 'var(--radius-lg)',
         }}>
           <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', margin: '0 0 4px' }}>Highlights</p>
@@ -537,9 +559,9 @@ export default function DashboardOverview() {
         </div>
         {recentOrders.length > 0 ? (
           <Table
-            headers={['Order ID', 'Customer', 'Items', 'Total', 'Status', 'Date']}
-            rows={recentOrders.map(o => [
-              <span style={{ color: 'var(--accent)', fontFamily: 'monospace', fontSize: 12, fontWeight: 600 }}>{o.id}</span>,
+            headers={['S/N', 'Customer', 'Items', 'Total', 'Status', 'Date']}
+            rows={recentOrders.map((o, idx) => [
+              <span style={{ color: 'var(--accent)', fontFamily: 'monospace', fontSize: 12, fontWeight: 600 }}>{idx + 1}</span>,
               o.customer,
               o.items,
               `₦${Number(o.total || 0).toLocaleString()}`,
