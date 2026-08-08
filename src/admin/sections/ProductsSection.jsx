@@ -647,7 +647,7 @@ export default function ProductsSection() {
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 4 }}>
                           <span style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{catName}</span>
-                          <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--text-muted)' }}>ID: {p.id}</span>
+                          
                         </div>
                         <h4 style={{ margin: '0 0 6px', fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.3 }}>{p.name}</h4>
                         {p.description && <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.description}</p>}
@@ -669,42 +669,90 @@ export default function ProductsSection() {
         </>
       )}
 
-      {/* Table View */}
+      {/* Responsive List View */}
       {viewMode === 'table' && (
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-            <thead>
-              <tr style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
-                {['ID', 'Product', 'Category', 'Price', 'Stock', 'Actions'].map(h => (
-                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11.5, fontWeight: 500, color: 'var(--text-secondary)' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
+          {filtered.length === 0 ? (
+            <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: 13 }}>
+              No products found.
+            </div>
+          ) : (
+            <div>
               {filtered.map(p => {
                 const catName = p.categories?.[0]?.name || p.category || (categories.find(c => String(c.id) === String(p.categoryId))?.name) || 'Apparel'
+                const firstImg = resolveFirstProductImage(p)
+                const isInstock = (p.stockQuantity > 0 || p.inStock)
+
                 return (
-                  <tr key={p.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontSize: 12 }}>{p.id}</td>
-                    <td style={{ padding: '14px 16px', fontWeight: 600, color: 'var(--text-primary)' }}>{p.name}</td>
-                    <td style={{ padding: '14px 16px', color: 'var(--text-secondary)' }}>{catName}</td>
-                    <td style={{ padding: '14px 16px', fontWeight: 600 }}>₦{Number(p.price || 0).toLocaleString()}</td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: p.stockQuantity > 0 ? 'var(--success)' : 'var(--danger)' }}>
-                        {p.stockQuantity || (p.inStock ? 'In Stock' : '0')}
+                  <div
+                    key={p.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '14px 18px',
+                      borderBottom: '1px solid var(--border)',
+                      gap: 14,
+                      flexWrap: 'wrap',
+                      transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#FAFAFA'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  >
+                    {/* Left Info: Image + Title + Category */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 200, flex: 1 }}>
+                      <div style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 'var(--radius)',
+                        background: 'var(--bg)',
+                        flexShrink: 0,
+                        overflow: 'hidden',
+                        border: '1px solid var(--border)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                        {firstImg ? (
+                          <img src={firstImg} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5">
+                            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                          </svg>
+                        )}
+                      </div>
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {p.name}
+                        </p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 3 }}>
+                          <span style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, textTransform: 'uppercase' }}>{catName}</span>
+                          <span style={{
+                            fontSize: 10.5,
+                            fontWeight: 600,
+                            color: isInstock ? 'var(--success)' : 'var(--danger)',
+                          }}>
+                            • {isInstock ? `${p.stockQuantity || 'In'} Stock` : 'Out of Stock'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Info: Price + Action Buttons */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'space-between', flexWrap: 'wrap', minWidth: 160 }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
+                        ₦{Number(p.price || 0).toLocaleString()}
                       </span>
-                    </td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <div style={{ display: 'flex', gap: 6 }}>
+                      <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
                         <AdminBtn variant="ghost" onClick={() => setEditProduct(p)}>Edit</AdminBtn>
                         <AdminBtn variant="danger" onClick={() => deleteProduct(p.id)}>Delete</AdminBtn>
                       </div>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 )
               })}
-            </tbody>
-          </table>
+            </div>
+          )}
         </div>
       )}
 

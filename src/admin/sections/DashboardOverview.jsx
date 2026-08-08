@@ -63,8 +63,8 @@ export function SectionHeader({ title, sub, action }) {
 
   const handleRefresh = async () => {
     setRefreshing(true)
-    await fetchAllApiData(false)
-    setTimeout(() => setRefreshing(false), 500)
+    await fetchAllApiData(true)
+    setTimeout(() => setRefreshing(false), 400)
   }
 
   return (
