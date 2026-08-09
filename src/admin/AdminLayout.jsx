@@ -26,7 +26,7 @@ const SECTIONS = {
   inventory:  InventorySection,
   orders:     OrdersSection,
   customers:  CustomersSection,
-  reviews:    ReviewsSection,
+  // reviews:    ReviewsSection,
   payments:   PaymentsSection,
   discounts:  DiscountsSection,
   shipping:   ShippingSection,
@@ -209,7 +209,7 @@ export default function AdminLayout() {
             </div>
 
             {/* Storefront link */}
-            <a
+            {/* <a
               href="http://localhost:5173"
               target="_blank"
               rel="noopener noreferrer"
@@ -227,7 +227,7 @@ export default function AdminLayout() {
               onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
             >
               Storefront <ExternalIcon />
-            </a>
+            </a> */}
 
             {/* Separator */}
             <div style={{ width: 1, height: 18, background: 'var(--border)' }} className="mobile-hide" />
