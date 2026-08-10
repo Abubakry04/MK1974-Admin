@@ -1,5 +1,6 @@
 import { useAdmin } from '../context/AdminContext'
 import { SectionHeader, AdminBtn, StatCard } from './DashboardOverview'
+import BrandLoader from '../../components/BrandLoader'
 
 export default function InventorySection() {
   const { products, apiLoading, fetchAllApiData } = useAdmin()

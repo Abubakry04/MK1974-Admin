@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAdmin } from '../context/AdminContext'
 import { SectionHeader, StatusBadge, StatCard, AdminBtn } from './DashboardOverview'
+import BrandLoader from '../../components/BrandLoader'
 
 const STATUS_CONFIG = [
   { key: 'PendingPayment',   label: 'Pending Payment',   desc: 'Awaiting customer payment' },
@@ -92,15 +93,7 @@ export default function OrdersSection() {
   }
 
   if (apiLoading) {
-    return (
-      <div className="animate-fade-in" style={{ padding: '60px 20px', textAlign: 'center' }}>
-        <div style={{
-          width: 32, height: 32, border: '3px solid var(--border)', borderTopColor: 'var(--accent)',
-          borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px'
-        }} />
-        <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>Loading orders...</p>
-      </div>
-    )
+    return <BrandLoader size="lg" />
   }
 
   return (

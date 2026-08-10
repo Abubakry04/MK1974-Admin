@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAdmin } from './context/AdminContext'
 import AdminSidebar from './components/AdminSidebar'
 import AdminLogin from './components/AdminLogin'
+import BrandLoader from '../components/BrandLoader'
 import mkLogo from '../assets/mk2.png'
 
 // Sections
@@ -429,28 +430,16 @@ export default function AdminLayout() {
             <div style={{
               position: 'absolute',
               inset: 0,
-              background: 'rgba(255, 255, 255, 0.75)',
-              backdropFilter: 'blur(3px)',
+              background: 'rgba(255, 255, 255, 0.85)',
+              backdropFilter: 'blur(6px)',
               zIndex: 50,
               display: 'flex',
-              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
               minHeight: 360,
-              gap: 14,
               borderRadius: 'var(--radius-lg)',
-            }} className="animate-fade-in">
-              <div style={{
-                width: 38,
-                height: 38,
-                border: '3px solid var(--border-strong)',
-                borderTopColor: 'var(--accent)',
-                borderRadius: '50%',
-                animation: 'spin 0.75s linear infinite',
-              }} />
-              <p style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: 'var(--text-primary)', fontFamily: "'DM Sans', sans-serif" }}>
-                Syncing live data...
-              </p>
+            }}>
+              <BrandLoader  size="lg" />
             </div>
           )}
           <ActiveSection />
