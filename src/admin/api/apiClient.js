@@ -1,5 +1,5 @@
 // ─── MK Brand API Client ───────────────────────────────────────────────────────
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://mk-brand-api.onrender.com'
 
 // Store the JWT token in memory (backed by localStorage)
 let _token = localStorage.getItem('mk1974_admin_token') || null
