@@ -40,13 +40,13 @@ export default function PaymentsSection() {
   })
 
   if (apiLoading) {
-    return <BrandLoader size="lg" />
+    return <BrandLoader />
   }
 
   return (
     <div className="animate-fade-up">
       <SectionHeader
-        title="Payment Operations & Verification"
+        title="Payment Verification"
         sub={`${pendingPayments.length} pending transfer receipts awaiting admin approval`}
       />
 
@@ -75,7 +75,7 @@ export default function PaymentsSection() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14, marginBottom: 24 }}>
         <StatCard label="Total Payments"       value={orders.length} />
         <StatCard label="Pending Approval"    value={pendingPayments.length} accent="var(--warning)" />
-        <StatCard label="Payment Channel"     value="100% Direct Bank Transfer" accent="var(--success)" />
+        {/* <StatCard label="Payment Channel"     value="100% Direct Bank Transfer" accent="var(--success)" /> */}
       </div>
 
       {/* Live Bank Transfer Approvals Queue */}

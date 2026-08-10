@@ -109,25 +109,25 @@ export default function CategoriesSection() {
         {categories.map(cat => (
           <div key={cat.id} style={{
             background: '#ffffff', border: '1px solid rgba(30,31,33,0.08)',
-            padding: '24px 28px', borderRadius: 8, transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
+            padding: '14px 18px', borderRadius: 8, transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
             boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
           }} className="hover-lift">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
               <div>
-                <p style={{ fontSize: 16, fontWeight: 600, color: '#1E1F21', margin: 0 }}>{cat.name}</p>
+                <p style={{ fontSize: 15, fontWeight: 600, color: '#1E1F21', margin: 0 }}>{cat.name}</p>
               </div>
               <button
                 id={`delete-cat-${cat.id}`}
                 onClick={() => handleDelete(cat)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(30,31,33,0.3)', fontSize: 18, padding: 4, lineHeight: 1, transition: 'color 0.15s' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(30,31,33,0.3)', fontSize: 16, padding: '2px 4px', lineHeight: 1, transition: 'color 0.15s' }}
                 onMouseEnter={e => e.currentTarget.style.color = '#dc2626'}
                 onMouseLeave={e => e.currentTarget.style.color = 'rgba(30,31,33,0.3)'}
                 title="Delete Category"
               >×</button>
             </div>
             <div>
-              <p style={{ fontSize: 28, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: 'var(--accent)', margin: 0 }}>{productCount(cat.id, cat.name)}</p>
-              <p style={{ fontSize: 10, color: 'var(--text-muted)', margin: 0, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600 }}>Assigned Products</p>
+              <p style={{ fontSize: 22, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: 'var(--accent)', margin: 0, lineHeight: 1.1 }}>{productCount(cat.id, cat.name)}</p>
+              <p style={{ fontSize: 9.5, color: 'var(--text-muted)', margin: '2px 0 0', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>Assigned Products</p>
             </div>
           </div>
         ))}

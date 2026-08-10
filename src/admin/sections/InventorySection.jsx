@@ -14,7 +14,7 @@ export default function InventorySection() {
       <SectionHeader
         title="Inventory Control"
         sub={apiLoading ? 'Syncing stock from live API...' : `Tracking stock levels across ${products.length} product items`}
-        action={<AdminBtn variant="ghost" onClick={() => fetchAllApiData(false)} id="refresh-inventory-btn">↻ Refresh Stock</AdminBtn>}
+        // action={<AdminBtn variant="ghost" onClick={() => fetchAllApiData(false)} id="refresh-inventory-btn">↻ Refresh Stock</AdminBtn>}
       />
 
       {/* KPI Cards — NO Variants card */}
@@ -37,7 +37,7 @@ export default function InventorySection() {
         </div>
 
         {apiLoading && products.length === 0 ? (
-          <p style={{ color: 'var(--text-secondary)', fontSize: 13, textAlign: 'center', padding: '40px 0' }}>Syncing live inventory data...</p>
+          <BrandLoader size="md" />
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>

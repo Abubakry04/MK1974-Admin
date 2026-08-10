@@ -1,29 +1,29 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAdmin } from './context/AdminContext'
 import AdminSidebar from './components/AdminSidebar'
 import AdminLogin from './components/AdminLogin'
 import BrandLoader from '../components/BrandLoader'
 import mkLogo from '../assets/mk2.png'
 
-// Sections
+// Sub-sections
 import DashboardOverview from './sections/DashboardOverview'
-import ProductsSection from './sections/ProductsSection'
 import CategoriesSection from './sections/CategoriesSection'
+import ProductsSection from './sections/ProductsSection'
 import InventorySection from './sections/InventorySection'
 import OrdersSection from './sections/OrdersSection'
 import CustomersSection from './sections/CustomersSection'
-import ReviewsSection from './sections/ReviewsSection'
+// import ReviewsSection from './sections/ReviewsSection'
 import PaymentsSection from './sections/PaymentsSection'
 import DiscountsSection from './sections/DiscountsSection'
 import ShippingSection from './sections/ShippingSection'
-import AnalyticsSection from './sections/AnalyticsSection'
 import StaffSection from './sections/StaffSection'
+import AnalyticsSection from './sections/AnalyticsSection'
 import SettingsSection from './sections/SettingsSection'
 
 const SECTIONS = {
   dashboard:  DashboardOverview,
-  products:   ProductsSection,
   categories: CategoriesSection,
+  products:   ProductsSection,
   inventory:  InventorySection,
   orders:     OrdersSection,
   customers:  CustomersSection,
@@ -31,25 +31,25 @@ const SECTIONS = {
   payments:   PaymentsSection,
   discounts:  DiscountsSection,
   shipping:   ShippingSection,
-  analytics:  AnalyticsSection,
   staff:      StaffSection,
+  analytics:  AnalyticsSection,
   settings:   SettingsSection,
 }
 
 const SECTION_LABELS = {
-  dashboard:  'Dashboard',
-  products:   'Products',
-  categories: 'Categories',
-  inventory:  'Inventory',
-  orders:     'Orders',
-  customers:  'Customers',
-  reviews:    'Reviews',
-  payments:   'Payments',
-  discounts:  'Discounts',
-  shipping:   'Shipping',
-  analytics:  'Analytics',
-  staff:      'Staff',
-  settings:   'Settings',
+  dashboard:  'Overview',
+  categories: 'Product Categories',
+  products:   'Products Catalogue',
+  inventory:  'Stock & Inventory Control',
+  orders:     'Orders Management',
+  customers:  'Customer Accounts',
+  // reviews:    'Customer Reviews',
+  payments:   'Payment Operations',
+  discounts:  'Promotions & Discounts',
+  shipping:   'Shipping & Delivery Rates',
+  staff:      'Administrative Staff',
+  analytics:  'Reports & Analytics',
+  settings:   'System Settings',
 }
 
 // Hamburger icon
@@ -62,15 +62,15 @@ const MenuIcon = () => (
 )
 
 const BellIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-    <path d="M13.73 21a2 2 0 01-3.46 0"/>
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
   </svg>
 )
 
 const ExternalIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 3, display: 'inline' }}>
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
     <polyline points="15 3 21 3 21 9"/>
     <line x1="10" y1="14" x2="21" y2="3"/>
   </svg>
@@ -81,6 +81,26 @@ export default function AdminLayout() {
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const userMenuRef = useRef(null)
+  const notificationsRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setShowUserMenu(false)
+      }
+      if (notificationsRef.current && !notificationsRef.current.contains(e.target)) {
+        setShowNotifications(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [])
 
   if (!adminUser) return <AdminLogin />
 
@@ -234,7 +254,7 @@ export default function AdminLayout() {
             <div style={{ width: 1, height: 18, background: 'var(--border)' }} className="mobile-hide" />
 
             {/* Notifications */}
-            <div style={{ position: 'relative' }}>
+            <div ref={notificationsRef} style={{ position: 'relative' }}>
               <button
                 onClick={() => { setShowNotifications(!showNotifications); setShowUserMenu(false) }}
                 style={{
@@ -328,7 +348,7 @@ export default function AdminLayout() {
             </div>
 
             {/* User menu */}
-            <div style={{ position: 'relative' }}>
+            <div ref={userMenuRef} style={{ position: 'relative' }}>
               <button
                 onClick={() => { setShowUserMenu(!showUserMenu); setShowNotifications(false) }}
                 style={{

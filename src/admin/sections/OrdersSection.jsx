@@ -132,23 +132,36 @@ export default function OrdersSection() {
         <StatCard label="Delivered"          value={statusCounts.Delivered}                             accent="var(--accent)" />
       </div>
 
-      {/* Horizontal Touch Scrollable Filter Tabs */}
-      <div style={{
-        display: 'flex', gap: 8, marginBottom: 20, overflowX: 'auto',
-        WebkitOverflowScrolling: 'touch', paddingBottom: 4
-      }}>
-        <button onClick={() => setFilter('all')} style={filterTabStyle(filter === 'all')}>
-          All ({statusCounts.all})
-        </button>
-        {STATUS_CONFIG.map(item => {
-          const count = statusCounts[item.key] || 0
-          const active = filter.toLowerCase() === item.key.toLowerCase()
-          return (
-            <button key={item.key} onClick={() => setFilter(item.key)} style={filterTabStyle(active)}>
-              {item.label}{count > 0 ? ` (${count})` : ''}
-            </button>
-          )
-        })}
+      {/* Filter Dropdown */}
+      <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <select
+          id="order-status-filter"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          style={{
+            background: 'var(--surface)',
+            border: '1px solid var(--border-strong)',
+            color: 'var(--text-primary)',
+            padding: '8.5px 14px',
+            fontSize: 13,
+            fontFamily: "'DM Sans', sans-serif",
+            outline: 'none',
+            borderRadius: 'var(--radius)',
+            cursor: 'pointer',
+            minWidth: 220,
+            boxShadow: 'var(--shadow-sm)'
+          }}
+        >
+          <option value="all">All Orders ({statusCounts.all})</option>
+          {STATUS_CONFIG.map(item => {
+            const count = statusCounts[item.key] || 0
+            return (
+              <option key={item.key} value={item.key}>
+                {item.label} ({count})
+              </option>
+            )
+          })}
+        </select>
       </div>
 
       <div className="responsive-grid-split" style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 360px' : '1fr', gap: 16 }}>

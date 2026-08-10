@@ -30,7 +30,7 @@ export default function CustomersSection() {
 
       {/* KPI Cards — ONLY account metrics, NO money */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
-        <StatCard label="Total Registered Customers" value={onlyCustomers.length} />
+        {/* <StatCard label="Total Registered Customers" value={onlyCustomers.length} /> */}
         <StatCard label="Active Accounts" value={onlyCustomers.length} accent="var(--accent)" />
       </div>
 

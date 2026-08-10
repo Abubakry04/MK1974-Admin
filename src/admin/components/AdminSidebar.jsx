@@ -105,7 +105,7 @@ const NAV_ITEMS = [
   { id: 'inventory',  label: 'Inventory',  icon: 'inventory' },
   { id: 'orders',     label: 'Orders',     icon: 'orders' },
   { id: 'customers',  label: 'Customers',  icon: 'customers' },
-  { id: 'reviews',    label: 'Reviews',    icon: 'reviews' },
+  // { id: 'reviews',    label: 'Reviews',    icon: 'reviews' },
   { id: 'payments',   label: 'Payments',   icon: 'payments' },
   { id: 'analytics',  label: 'Analytics',  icon: 'analytics' },
   { id: 'staff',      label: 'Staff',      icon: 'staff' },

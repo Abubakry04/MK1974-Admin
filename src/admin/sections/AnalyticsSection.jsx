@@ -23,7 +23,7 @@ export default function AnalyticsSection() {
     <div className="animate-fade-in">
       <SectionHeader
         title="Reports & Analytics"
-        sub="Performance metrics and live sales breakdown synced with API"
+        sub="Performance metrics and live sales breakdown"
       />
 
       {/* Metric Cards */}
