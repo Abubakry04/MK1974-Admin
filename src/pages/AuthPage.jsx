@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
+import BrandLoader from '../components/BrandLoader'
 
 export default function AuthPage() {
   const { login, register, showToast } = useApp()
@@ -179,7 +180,7 @@ export default function AuthPage() {
                 className="btn-primary w-full justify-center disabled:opacity-60"
               >
                 {loading ? (
-                  <span className="inline-block w-4 h-4 border-2 border-dark/30 border-t-dark rounded-full animate-spin" />
+                  <BrandLoader inline dark={false} size="sm" message="Processing..." />
                 ) : mode === 'login' ? 'Sign In' : mode === 'register' ? 'Create Account' : 'Send Reset Link'}
               </button>
 

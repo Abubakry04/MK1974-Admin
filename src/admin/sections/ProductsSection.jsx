@@ -467,42 +467,42 @@ export default function ProductsSection() {
 
       {/* Refined Filter Toolbar */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 18, marginBottom: 24, boxShadow: 'var(--shadow-sm)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           
-          {/* Left Controls: Search + Category Dropdown */}
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
-            
-            {/* Search Input with Clear Button */}
-            <div style={{ position: 'relative', minWidth: 240, flex: 1, maxWidth: 360 }}>
-              <input
-                id="product-search"
-                placeholder="Search by product name, SKU, or category..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
+          {/* Search Input with Clear Button */}
+          <div style={{ position: 'relative', minWidth: 220, flex: 1, maxWidth: 360 }}>
+            <input
+              id="product-search"
+              placeholder="Search by product name, SKU, or category..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{
+                background: 'var(--bg)', border: '1px solid var(--border-strong)',
+                color: 'var(--text-primary)', padding: '9px 34px 9px 14px', fontSize: 13, fontFamily: "'DM Sans', sans-serif",
+                outline: 'none', width: '100%', borderRadius: 'var(--radius)', boxSizing: 'border-box'
+              }}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
                 style={{
-                  background: 'var(--bg)', border: '1px solid var(--border-strong)',
-                  color: 'var(--text-primary)', padding: '9px 34px 9px 14px', fontSize: 13, fontFamily: "'DM Sans', sans-serif",
-                  outline: 'none', width: '100%', borderRadius: 'var(--radius)', boxSizing: 'border-box'
+                  position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 12
                 }}
-              />
-              {search && (
-                <button
-                  onClick={() => setSearch('')}
-                  style={{
-                    position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
-                    background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 12
-                  }}
-                >✕</button>
-              )}
-            </div>
+              >✕</button>
+            )}
+          </div>
 
-            {/* Category Select Dropdown for fast access */}
+          {/* Side-by-Side Category & Stock Status Dropdowns */}
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'nowrap', flex: 1, minWidth: 260 }}>
             <select
               value={selectedCat}
               onChange={e => setSelectedCat(e.target.value)}
               style={{
+                flex: 1,
+                minWidth: 0,
                 background: 'var(--bg)', border: '1px solid var(--border-strong)',
-                color: 'var(--text-primary)', padding: '8.5px 12px', fontSize: 13, fontFamily: "'DM Sans', sans-serif",
+                color: 'var(--text-primary)', padding: '8.5px 10px', fontSize: 13, fontFamily: "'DM Sans', sans-serif",
                 outline: 'none', borderRadius: 'var(--radius)', cursor: 'pointer'
               }}
             >
@@ -514,13 +514,14 @@ export default function ProductsSection() {
               ))}
             </select>
 
-            {/* Stock Status Filter */}
             <select
               value={stockFilter}
               onChange={e => setStockFilter(e.target.value)}
               style={{
+                flex: 1,
+                minWidth: 0,
                 background: 'var(--bg)', border: '1px solid var(--border-strong)',
-                color: 'var(--text-primary)', padding: '8.5px 12px', fontSize: 13, fontFamily: "'DM Sans', sans-serif",
+                color: 'var(--text-primary)', padding: '8.5px 10px', fontSize: 13, fontFamily: "'DM Sans', sans-serif",
                 outline: 'none', borderRadius: 'var(--radius)', cursor: 'pointer'
               }}
             >
@@ -528,19 +529,19 @@ export default function ProductsSection() {
               <option value="instock">In Stock Only</option>
               <option value="outstock">Out of Stock</option>
             </select>
-
-            {isFilterActive && (
-              <button
-                onClick={resetFilters}
-                style={{
-                  background: 'none', border: 'none', color: 'var(--accent)', fontSize: 12.5,
-                  fontWeight: 600, cursor: 'pointer', padding: '4px 8px'
-                }}
-              >
-                Reset Filters ✕
-              </button>
-            )}
           </div>
+
+          {isFilterActive && (
+            <button
+              onClick={resetFilters}
+              style={{
+                background: 'none', border: 'none', color: 'var(--accent)', fontSize: 12.5,
+                fontWeight: 600, cursor: 'pointer', padding: '4px 8px'
+              }}
+            >
+              Reset Filters ✕
+            </button>
+          )}
 
           {/* View Mode Toggle (Grid / List) */}
           <div style={{ display: 'flex', gap: 4, background: 'var(--bg)', padding: 3, border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}>
@@ -557,7 +558,7 @@ export default function ProductsSection() {
         </div>
 
         {/* Horizontal Category Quick Pills with Dynamic Counts */}
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
+        {/* <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
           <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500, marginRight: 4 }}>Refine Category:</span>
           <button
             onClick={() => setSelectedCat('all')}
@@ -597,7 +598,7 @@ export default function ProductsSection() {
               </button>
             )
           })}
-        </div>
+        </div> */}
       </div>
 
       {/* Grid View */}

@@ -70,14 +70,24 @@ export function SectionHeader({ title, sub, action }) {
   return (
     <div style={{
       display: 'flex',
-      alignItems: 'flex-start',
-      justifyContent: 'space-between',
+      flexDirection: 'column',
       marginBottom: 24,
-      gap: 12,
-      flexWrap: 'wrap',
+      gap: 10,
       width: '100%',
+      background: 'var(--surface)',
+      border: '1px solid var(--border)',
+      padding: '20px 24px',
+      borderRadius: 'var(--radius-lg)',
+      boxShadow: 'var(--shadow-sm)',
     }}>
-      <div style={{ minWidth: 0, flex: '1 1 220px' }}>
+      {/* Title & Refresh Button Row */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        gap: 12,
+      }}>
         <h2 style={{
           fontFamily: "'Cormorant Garamond', serif",
           fontWeight: 600,
@@ -86,22 +96,11 @@ export function SectionHeader({ title, sub, action }) {
           margin: 0,
           letterSpacing: '-0.02em',
           lineHeight: 1.15,
-          wordBreak: 'break-word',
         }}>
           {title}
         </h2>
-        {sub && (
-          <p style={{
-            color: 'var(--text-secondary)',
-            fontSize: 13,
-            margin: '4px 0 0',
-            fontWeight: 400,
-          }}>
-            {sub}
-          </p>
-        )}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+
+        {/* Refresh Pill Button (Positioned Far Right) */}
         <button
           onClick={handleRefresh}
           disabled={refreshing}
@@ -109,27 +108,29 @@ export function SectionHeader({ title, sub, action }) {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
-            padding: '7px 12px',
-            fontSize: 12,
-            fontWeight: 500,
+            padding: '5.5px 14px',
+            fontSize: 11.5,
+            fontWeight: 600,
             color: 'var(--text-primary)',
-            background: 'var(--surface)',
+            background: 'var(--bg)',
             border: '1px solid var(--border-strong)',
-            borderRadius: 'var(--radius)',
+            borderRadius: 20,
             cursor: refreshing ? 'default' : 'pointer',
-            transition: 'all 0.15s',
+            transition: 'all 0.15s ease',
             fontFamily: "'DM Sans', sans-serif",
-            boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
             whiteSpace: 'nowrap',
+            flexShrink: 0,
           }}
-          title="Refresh live data"
+          onMouseEnter={e => { if (!refreshing) e.currentTarget.style.borderColor = 'var(--accent)' }}
+          onMouseLeave={e => { if (!refreshing) e.currentTarget.style.borderColor = 'var(--border-strong)' }}
+          title="Refresh live store data"
         >
           <svg
-            width="13" height="13"
+            width="12" height="12"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
             style={{
@@ -141,8 +142,34 @@ export function SectionHeader({ title, sub, action }) {
           </svg>
           {refreshing ? 'Syncing...' : 'Refresh'}
         </button>
-        {action}
       </div>
+
+      {/* Subtitle text */}
+      {sub && (
+        <p style={{
+          color: 'var(--text-muted)',
+          fontSize: 12.5,
+          margin: 0,
+          fontWeight: 400,
+          letterSpacing: '0.01em',
+        }}>
+          {sub}
+        </p>
+      )}
+
+      {/* Action Button (+ Add Product) aligned to the right UNDER the Refresh Button */}
+      {action && (
+        <div className="section-header-action" style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          marginTop: 6,
+          paddingTop: 10,
+          borderTop: '1px solid var(--border)',
+        }}>
+          {action}
+        </div>
+      )}
     </div>
   )
 }

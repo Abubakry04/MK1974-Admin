@@ -43,7 +43,7 @@ export default function ReviewsSection() {
         <StatCard label="Average Rating"     value={avgRating} accent="var(--accent)" />
       </div>
 
-      {reviews.length === 0 && (
+      {reviews.length === 0 ? (
         <div style={{
           padding: '48px 20px',
           textAlign: 'center',
@@ -53,102 +53,37 @@ export default function ReviewsSection() {
           border: '1px solid var(--border)',
           borderRadius: 'var(--radius-lg)',
         }}>
-          Notice: No customer product reviews submitted yet. Live API synced.
+          No reviews available yet.
         </div>
-      )}
-
-      {/* Pending Reviews Moderation Queue */}
-      {pending.length > 0 && (
-        <div style={{ marginBottom: 32 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--warning)' }} />
-            <h3 style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-              Pending Moderation Queue ({pending.length})
-            </h3>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {pending.map(r => (
-              <div
-                key={r.id}
-                style={{
-                  background: 'var(--surface)',
-                  border: '1px solid rgba(180, 83, 9, 0.25)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '20px 24px',
-                  display: 'flex',
-                  gap: 20,
-                  alignItems: 'flex-start',
-                  boxShadow: 'var(--shadow-sm)',
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, flexWrap: 'wrap', gap: 8 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--text-primary)' }}>{r.customer}</span>
-                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>on</span>
-                      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--accent)' }}>{r.product}</span>
-                    </div>
-                    <StarRating rating={r.rating} />
-                  </div>
-                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 8px', lineHeight: 1.6, fontWeight: 400 }}>"{r.text}"</p>
-                  <p style={{ fontSize: 11.5, color: 'var(--text-muted)', margin: 0 }}>Submitted on {r.date}</p>
-                </div>
-                
-                <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                  <AdminBtn variant="secondary" onClick={() => approveReview(r.id)} id={`approve-review-${r.id}`}>
-                    Approve
-                  </AdminBtn>
-                  <AdminBtn variant="danger" onClick={() => deleteReview(r.id)} id={`delete-review-${r.id}`}>
-                    Reject
-                  </AdminBtn>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Published / All Reviews List */}
-      {reviews.length > 0 && (
-        <div>
-          <h3 style={{ margin: '0 0 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-            Published Product Feedback
-          </h3>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {reviews.filter(r => r.status !== 'pending').map(r => (
-              <div
-                key={r.id}
-                style={{
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '20px 24px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  gap: 20,
-                  transition: 'box-shadow 0.15s',
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
-                    <StarRating rating={r.rating} />
-                    <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--text-primary)' }}>{r.customer}</span>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>reviewed <strong style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{r.product}</strong></span>
-                    <StatusBadge status={r.status} />
-                  </div>
-                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 6px', lineHeight: 1.6, fontWeight: 400 }}>"{r.text}"</p>
-                  <p style={{ fontSize: 11.5, color: 'var(--text-muted)', margin: 0 }}>{r.date}</p>
-                </div>
-
-                <AdminBtn variant="danger" onClick={() => deleteReview(r.id)} id={`del-review-${r.id}`}>
-                  Remove
-                </AdminBtn>
-              </div>
-            ))}
-          </div>
+      ) : (
+        <div style={{ overflowX: 'auto', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--border)', background: '#FAFAFA' }}>
+                <th style={{ padding: '12px 16px', textAlign: 'left' }}>Customer</th>
+                <th style={{ padding: '12px 16px', textAlign: 'left' }}>Rating</th>
+                <th style={{ padding: '12px 16px', textAlign: 'left' }}>Comment</th>
+                <th style={{ padding: '12px 16px', textAlign: 'left' }}>Status</th>
+                <th style={{ padding: '12px 16px', textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reviews.map(r => (
+                <tr key={r.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                  <td style={{ padding: '12px 16px', fontWeight: 500 }}>{r.author}</td>
+                  <td style={{ padding: '12px 16px' }}><StarRating rating={r.rating} /></td>
+                  <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>{r.comment}</td>
+                  <td style={{ padding: '12px 16px' }}><StatusBadge status={r.status} /></td>
+                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                    {r.status === 'pending' && (
+                      <AdminBtn variant="ghost" onClick={() => approveReview?.(r.id)}>Approve</AdminBtn>
+                    )}
+                    <AdminBtn variant="danger" onClick={() => deleteReview?.(r.id)} style={{ marginLeft: 8 }}>Delete</AdminBtn>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

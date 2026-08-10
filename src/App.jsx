@@ -3,6 +3,7 @@ import { AppProvider } from './context/AppContext'
 import { AdminProvider } from './admin/context/AdminContext'
 import AdminLayout from './admin/AdminLayout'
 import Toast from './components/Toast'
+import BackToTop from './components/BackToTop'
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -78,6 +79,7 @@ export default function App() {
         <AdminProvider>
           <AdminLayout />
           <Toast />
+          <BackToTop />
         </AdminProvider>
       </AppProvider>
     </ErrorBoundary>

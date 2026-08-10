@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAdmin } from '../context/AdminContext'
 import mkLogo from '../../assets/mk2.png'
+import BrandLoader from '../../components/BrandLoader'
 
 export default function AdminLogin() {
   const { adminLogin } = useAdmin()
@@ -302,14 +303,14 @@ export default function AdminLogin() {
               onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#A8501F' }}
               onMouseLeave={e => { if (!loading) e.currentTarget.style.background = 'var(--accent)' }}
             >
-              {loading ? 'Signing in…' : 'Sign in to Admin'}
+              {loading ? <BrandLoader inline dark={true} size="sm" message="Signing in..." /> : 'Sign in to Admin'}
             </button>
           </form>
 
           {/* Mobile storefront link */}
-          <p className="desktop-hide" style={{ textAlign: 'center', marginTop: 24, fontSize: 13, color: 'var(--text-secondary)' }}>
+          {/* <p className="desktop-hide" style={{ textAlign: 'center', marginTop: 24, fontSize: 13, color: 'var(--text-secondary)' }}>
             <a href="http://localhost:5173" style={{ color: 'var(--accent)', fontWeight: 500 }}>← Back to Storefront</a>
-          </p>
+          </p> */}
         </div>
       </div>
     </div>

@@ -28,9 +28,9 @@ export default function StaffSection() {
   return (
     <div className="animate-fade-in">
       <SectionHeader
-        title="Staff & Administrative Team"
+        title="Administrative Team"
         sub={`${displayStaff.length} active team member(s) with role access`}
-        action={<AdminBtn id="invite-staff-btn" variant="secondary" onClick={() => setShowInviteModal(true)}>+ Invite Team Member</AdminBtn>}
+        // action={<AdminBtn id="invite-staff-btn" variant="secondary" onClick={() => setShowInviteModal(true)}>+ Invite Team Member</AdminBtn>}
       />
 
       {/* Staff Grid */}
