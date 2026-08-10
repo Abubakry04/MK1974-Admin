@@ -22,7 +22,7 @@ export default function AnalyticsSection() {
   return (
     <div className="animate-fade-in">
       <SectionHeader
-        title="Analytics & Store Intelligence"
+        title="Reports & Analytics"
         sub="Performance metrics and live sales breakdown synced with API"
       />
 
@@ -52,7 +52,7 @@ export default function AnalyticsSection() {
       {/* Product Rankings & Traffic Sources */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
         {/* Top Products */}
-        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: 24, borderRadius: 'var(--radius-lg)' }}>
+        {/* <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: 24, borderRadius: 'var(--radius-lg)' }}>
           <p style={{ fontSize: 11, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--accent)', margin: '0 0 16px', fontWeight: 600 }}>Best Selling Items</p>
           {topProductsData.length > 0 ? (
             topProductsData.map((p, i) => (
@@ -75,10 +75,10 @@ export default function AnalyticsSection() {
               Notice: No top selling product analytics recorded yet. Live API synced.
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Traffic Channels */}
-        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: 24, borderRadius: 'var(--radius-lg)' }}>
+        {/* <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: 24, borderRadius: 'var(--radius-lg)' }}>
           <p style={{ fontSize: 11, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--accent)', margin: '0 0 16px', fontWeight: 600 }}>Traffic & Acquisition</p>
           {trafficData.map((t, i) => (
             <div key={t.source} style={{ marginBottom: 16 }}>
@@ -111,7 +111,7 @@ export default function AnalyticsSection() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )

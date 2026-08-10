@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAdmin } from '../context/AdminContext'
 import { SectionHeader, StatCard, AdminBtn } from './DashboardOverview'
+import BrandLoader from '../../components/BrandLoader'
 
 export default function PaymentsSection() {
   const { orders = [], pendingPayments = [], reviewPayment, apiLoading, apiError } = useAdmin()
@@ -39,15 +40,7 @@ export default function PaymentsSection() {
   })
 
   if (apiLoading) {
-    return (
-      <div className="animate-fade-in" style={{ padding: '60px 20px', textAlign: 'center' }}>
-        <div style={{
-          width: 32, height: 32, border: '3px solid var(--border)', borderTopColor: 'var(--accent)',
-          borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px'
-        }} />
-        <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>Loading payment receipts and live API data...</p>
-      </div>
-    )
+    return <BrandLoader size="lg" />
   }
 
   return (
