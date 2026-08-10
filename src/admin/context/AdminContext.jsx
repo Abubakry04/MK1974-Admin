@@ -210,16 +210,14 @@ export function AdminProvider({ children }) {
         setOrders(mappedOrds)
       }
 
-      if (parsedProds.length > 0) {
-        setProducts(parsedProds.map(p => ({
-          ...p,
-          id: p.productId ?? p.id,
-          categories: (p.categories || []).map(c => {
-            if (typeof c === 'string') return { id: c, name: c };
-            return { ...c, id: c.categoryId ?? c.id };
-          })
-        })))
-      }
+      setProducts(parsedProds.map(p => ({
+        ...p,
+        id: p.productId ?? p.id,
+        categories: (p.categories || []).map(c => {
+          if (typeof c === 'string') return { id: c, name: c };
+          return { ...c, id: c.categoryId ?? c.id };
+        })
+      })))
 
       if (parsedCats.length > 0) {
         setCategories(parsedCats.map(c => ({
@@ -244,8 +242,15 @@ export function AdminProvider({ children }) {
 
       if (dashSummary) setDashboardSummary(dashSummary)
       if (dashOverview) setDashboardOverview(dashOverview)
+
+      if (parsedProds.length === 0 && isInitial) {
+        setTimeout(() => fetchAllApiData(false), 4000)
+      }
     } catch (err) {
       setApiError(err.message || 'Failed to fetch API data.')
+      if (isInitial) {
+        setTimeout(() => fetchAllApiData(false), 4000)
+      }
     } finally {
       if (isInitial) setApiLoading(false)
     }
