@@ -46,16 +46,22 @@ function safeParseJson(text) {
   }
 }
 
-async function request(method, path, body) {
+async function request(method, path, body, isPublic = false) {
   const isAuthPath = path.toLowerCase().includes('/auth/')
+  const isGetMethod = method.toUpperCase() === 'GET'
+  const isPublicRequest = isPublic || isGetMethod
 
-  if (!isAuthPath && _token && isTokenExpired(_token)) {
+  if (_token && isTokenExpired(_token)) {
     handleSessionExpiration()
-    throw new Error('Your session has expired. Please sign in again.')
+    if (!isPublicRequest && !isAuthPath) {
+      throw new Error('Your session has expired. Please sign in again.')
+    }
   }
 
   const headers = { 'Content-Type': 'application/json' }
-  if (_token) headers['Authorization'] = `Bearer ${_token}`
+  if (_token && !isTokenExpired(_token)) {
+    headers['Authorization'] = `Bearer ${_token}`
+  }
 
   const primaryUrl = BASE_URL ? `${BASE_URL}${path}` : path
   let res
