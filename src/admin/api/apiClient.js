@@ -1,5 +1,6 @@
 // ─── MK Brand API Client ───────────────────────────────────────────────────────
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '' : 'https://mk-brand-api.onrender.com')
+const DIRECT_BACKEND = 'https://mk-brand-api.onrender.com'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 // Store the JWT token in memory (backed by localStorage)
 let _token = localStorage.getItem('mk1974_admin_token') || null
@@ -56,15 +57,28 @@ async function request(method, path, body) {
   const headers = { 'Content-Type': 'application/json' }
   if (_token) headers['Authorization'] = `Bearer ${_token}`
 
-  let res;
+  const primaryUrl = BASE_URL ? `${BASE_URL}${path}` : path
+  let res
   try {
-    res = await fetch(`${BASE_URL}${path}`, {
+    res = await fetch(primaryUrl, {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
     })
   } catch (err) {
-    throw new Error('Network error: Unable to connect to server. ' + err.message)
+    if (!primaryUrl.startsWith('http')) {
+      try {
+        res = await fetch(`${DIRECT_BACKEND}${path}`, {
+          method,
+          headers,
+          body: body ? JSON.stringify(body) : undefined,
+        })
+      } catch (err2) {
+        throw new Error('Network error: Unable to connect to server. ' + err2.message)
+      }
+    } else {
+      throw new Error('Network error: Unable to connect to server. ' + err.message)
+    }
   }
 
   if (!res.ok) {

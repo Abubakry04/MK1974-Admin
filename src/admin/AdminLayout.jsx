@@ -81,9 +81,13 @@ export default function AdminLayout() {
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [navHidden, setNavHidden] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
   const userMenuRef = useRef(null)
   const notificationsRef = useRef(null)
+  const mainScrollRef = useRef(null)
+  const prevY = useRef(0)
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -101,6 +105,43 @@ export default function AdminLayout() {
       document.removeEventListener('touchstart', handleClickOutside)
     }
   }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const el = mainScrollRef.current
+      const windowY = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0
+      const containerY = el ? el.scrollTop : 0
+      const y = Math.max(windowY, containerY)
+
+      // Hide on scroll down past 40px, show on scroll up (matching storefront Nav)
+      if (y > 40 && y > prevY.current + 3) {
+        setNavHidden(true)
+      } else if (y < prevY.current - 3) {
+        setNavHidden(false)
+      }
+      prevY.current = y
+      setScrolled(y > 20)
+    }
+
+    handleScroll()
+
+    const container = mainScrollRef.current
+    if (container) {
+      container.addEventListener('scroll', handleScroll, { passive: true })
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', handleScroll)
+      }
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
+  useEffect(() => {
+    setNavHidden(false)
+  }, [activeSection])
 
   if (!adminUser) return <AdminLogin />
 
@@ -136,9 +177,9 @@ export default function AdminLayout() {
       </div>
 
       {/* Main content */}
-      <div style={{ flex: 1, overflow: 'auto', minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+      <div ref={mainScrollRef} style={{ flex: 1, overflow: 'auto', minWidth: 0, display: 'flex', flexDirection: 'column' }}>
 
-        {/* Topbar */}
+        {/* Storefront-Style Smooth Hide/Show Topbar */}
         <header className="admin-topbar-header" style={{
           display: 'flex',
           alignItems: 'center',
@@ -146,10 +187,15 @@ export default function AdminLayout() {
           padding: '0 32px',
           height: 60,
           borderBottom: '1px solid var(--border)',
-          background: 'var(--surface)',
+          background: scrolled ? 'rgba(255, 255, 255, 0.95)' : 'var(--surface)',
+          backdropFilter: scrolled ? 'blur(16px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
           position: 'sticky',
           top: 0,
           zIndex: 40,
+          transform: navHidden && !mobileMenuOpen ? 'translateY(-100%)' : 'translateY(0)',
+          transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, box-shadow 0.3s',
+          boxShadow: scrolled && !navHidden ? '0 6px 20px -4px rgba(0, 0, 0, 0.08)' : 'none',
         }}>
 
           {/* Left side */}

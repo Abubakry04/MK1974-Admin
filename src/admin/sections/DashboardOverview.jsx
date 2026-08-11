@@ -523,7 +523,7 @@ export default function DashboardOverview() {
         </div>
 
         {/* Top Products */}
-        <div style={{
+        {/* <div style={{
           background: 'var(--surface)',
           border: '1px solid var(--border)',
           padding: '20px 22px',
@@ -568,7 +568,7 @@ export default function DashboardOverview() {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Recent Orders */}
