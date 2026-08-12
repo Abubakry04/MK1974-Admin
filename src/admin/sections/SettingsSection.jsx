@@ -440,9 +440,9 @@ export default function SettingsSection() {
 
       {activeTab === 'catalogue' && (
         <div style={{ maxWidth: 800 }}>
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: 28, borderRadius: 'var(--radius-lg)', marginBottom: 16 }}>
+          {/* <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: 28, borderRadius: 'var(--radius-lg)', marginBottom: 16 }}>
             <CategoriesManager />
-          </div>
+          </div> */}
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: 28, borderRadius: 'var(--radius-lg)', marginBottom: 16 }}>
             <ColorsManager />
           </div>
