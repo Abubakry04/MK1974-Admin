@@ -30,123 +30,7 @@ function SettingRow({ label, desc, children }) {
   )
 }
 
-// ─── Categories Manager ───────────────────────────────────────────────────────
-function CategoriesManager() {
-  const { categories, createCategory, deleteCategory } = useAdmin()
-  const [name, setName] = useState('')
-  const [selectedId, setSelectedId] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
 
-  const selectedCategory = categories.find(c => String(c.id) === String(selectedId)) || categories[0]
-
-  const handleCreate = async () => {
-    if (!name.trim()) { setError('Name required'); return }
-    setSaving(true); setError('')
-    try {
-      const created = await createCategory({ name: name.trim() })
-      setName('')
-      if (created?.id) setSelectedId(created.id)
-    }
-    catch (err) { setError(err.message) }
-    finally { setSaving(false) }
-  }
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteCategory(id)
-      if (String(selectedId) === String(id)) {
-        const remaining = categories.filter(c => String(c.id) !== String(id))
-        setSelectedId(remaining[0]?.id || '')
-      }
-    } catch (err) {
-      setError(err.message)
-    }
-  }
-
-  return (
-    <div>
-      <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Store Categories</p>
-      
-      {/* Create Input */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'flex-end', flexWrap: 'wrap' }}>
-        <input
-          placeholder="e.g. Streetwear"
-          value={name}
-          onChange={e => { setName(e.target.value); setError('') }}
-          onKeyDown={e => e.key === 'Enter' && handleCreate()}
-          style={{ background: 'var(--bg)', border: '1px solid var(--border-strong)', color: 'var(--text-primary)', padding: '9px 13px', fontSize: 13, fontFamily: "'DM Sans', sans-serif", outline: 'none', width: 220, borderRadius: 'var(--radius)' }}
-        />
-        <AdminBtn variant="secondary" onClick={handleCreate} disabled={saving} id="create-category-btn">
-          {saving ? 'Saving...' : '+ Add Category'}
-        </AdminBtn>
-      </div>
-      {error && <p style={{ fontSize: 12, color: 'var(--danger)', margin: '0 0 12px' }}>{error}</p>}
-
-      {/* Dropdown Select format */}
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-        <select
-          value={selectedId || (categories[0]?.id || '')}
-          onChange={e => setSelectedId(e.target.value)}
-          style={{
-            background: 'var(--bg)',
-            border: '1px solid var(--border-strong)',
-            color: 'var(--text-primary)',
-            padding: '9px 14px',
-            fontSize: 13,
-            fontFamily: "'DM Sans', sans-serif",
-            outline: 'none',
-            borderRadius: 'var(--radius)',
-            cursor: 'pointer',
-            minWidth: 260,
-            flex: 1,
-            maxWidth: 360,
-          }}
-        >
-          {categories.length === 0 ? (
-            <option value="">No categories configured</option>
-          ) : (
-            categories.map(c => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))
-          )}
-        </select>
-
-        {selectedCategory && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            background: 'var(--bg)',
-            border: '1px solid var(--border)',
-            padding: '7px 14px',
-            borderRadius: 'var(--radius)',
-          }}>
-            <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 600 }}>{selectedCategory.name}</span>
-            <button
-              onClick={() => handleDelete(selectedCategory.id)}
-              title="Delete category"
-              style={{
-                color: 'var(--danger)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: 12,
-                fontWeight: 600,
-                padding: '2px 6px',
-                borderRadius: 4,
-              }}
-            >
-              Delete ✕
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
 
 // ─── Colors Manager ───────────────────────────────────────────────────────────
 function ColorsManager() {
@@ -440,9 +324,6 @@ export default function SettingsSection() {
 
       {activeTab === 'catalogue' && (
         <div style={{ maxWidth: 800 }}>
-          {/* <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: 28, borderRadius: 'var(--radius-lg)', marginBottom: 16 }}>
-            <CategoriesManager />
-          </div> */}
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: 28, borderRadius: 'var(--radius-lg)', marginBottom: 16 }}>
             <ColorsManager />
           </div>
