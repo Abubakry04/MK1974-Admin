@@ -344,8 +344,15 @@ export function AdminProvider({ children }) {
     return data
   }, [fetchAllApiData])
 
-  const updateProduct = useCallback(async (id, body) => {
+  const updateProduct = useCallback(async (id, body, imageFiles) => {
     const data = await api.products.update(id, body)
+    if (id && imageFiles && imageFiles.length > 0) {
+      try {
+        await api.products.uploadImages(id, imageFiles)
+      } catch (err) {
+        console.error('[Image Upload] Failed:', err.message)
+      }
+    }
     await fetchAllApiData()
     return data
   }, [fetchAllApiData])
