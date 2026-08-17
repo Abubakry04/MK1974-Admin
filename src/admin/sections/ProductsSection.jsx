@@ -62,48 +62,136 @@ function resolveFirstProductImage(p) {
 }
 
 // ─── Add / Edit Product Modal ──────────────────────────────────────────────────
-function AddProductModal({ onClose, categories, colors = [], sizes = [], onSave, productToEdit }) {
-  const [form, setForm] = useState({
+function getInitialCategoryIds(p, categoriesList = []) {
+  if (!p) return []
+  if (Array.isArray(p.categoryIds) && p.categoryIds.length > 0) return p.categoryIds.map(Number)
+  if (p.categoryId) return Array.isArray(p.categoryId) ? p.categoryId.map(Number) : [Number(p.categoryId)]
+  if (Array.isArray(p.categories) && p.categories.length > 0) {
+    const ids = p.categories
+      .map(c => {
+        if (typeof c === 'number') return c
+        if (c.categoryId != null) return Number(c.categoryId)
+        if (c.id != null) return Number(c.id)
+        if (c.name && Array.isArray(categoriesList)) {
+          const match = categoriesList.find(cat => cat.name?.trim().toLowerCase() === String(c.name).trim().toLowerCase())
+          if (match) return Number(match.id ?? match.categoryId)
+        }
+        return null
+      })
+      .filter(id => id != null && !isNaN(Number(id)))
+      .map(Number)
+    if (ids.length > 0) return ids
+  }
+  if (p.categoryName && Array.isArray(categoriesList)) {
+    const match = categoriesList.find(cat => cat.name?.trim().toLowerCase() === String(p.categoryName).trim().toLowerCase())
+    if (match) return [Number(match.id ?? match.categoryId)]
+  }
+  return []
+}
+
+function getInitialColorIds(p, colorsList) {
+  if (!p) return []
+  if (Array.isArray(p.selectedColors) && p.selectedColors.length > 0) return p.selectedColors.map(Number)
+  if (Array.isArray(p.variants) && p.variants.length > 0) {
+    const ids = new Set()
+    p.variants.forEach(v => {
+      if (v.colorId) {
+        ids.add(Number(v.colorId))
+      } else if (v.color && Array.isArray(colorsList)) {
+        const match = colorsList.find(c => c.name?.trim().toLowerCase() === String(v.color).trim().toLowerCase())
+        if (match) ids.add(Number(match.id ?? match.colorId))
+      }
+    })
+    return Array.from(ids)
+  }
+  return []
+}
+
+function getInitialSizeIds(p, sizesList) {
+  if (!p) return []
+  if (Array.isArray(p.selectedSizes) && p.selectedSizes.length > 0) return p.selectedSizes.map(Number)
+  if (Array.isArray(p.variants) && p.variants.length > 0) {
+    const ids = new Set()
+    p.variants.forEach(v => {
+      if (v.sizeId) {
+        ids.add(Number(v.sizeId))
+      } else if (v.size && Array.isArray(sizesList)) {
+        const match = sizesList.find(s => s.name?.trim().toUpperCase() === String(v.size).trim().toUpperCase())
+        if (match) ids.add(Number(match.id ?? match.sizeId))
+      }
+    })
+    return Array.from(ids)
+  }
+  return []
+}
+
+function getInitialImages(p) {
+  if (!p) return []
+  const prodId = p.id ?? p.productId
+  if (prodId) {
+    try {
+      const cached = localStorage.getItem(`mk_prod_images_${prodId}`)
+      if (cached) {
+        const parsed = JSON.parse(cached)
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed.filter(x => typeof x === 'string')
+      }
+    } catch {}
+  }
+  if (Array.isArray(p.imageUrls) && p.imageUrls.length > 0) return p.imageUrls
+  if (Array.isArray(p.images) && p.images.length > 0) {
+    return p.images.map(img => typeof img === 'string' ? img : (img.imageUrl || img.url || '')).filter(Boolean)
+  }
+  if (Array.isArray(p.productImages) && p.productImages.length > 0) {
+    return p.productImages.map(img => typeof img === 'string' ? img : (img.imageUrl || img.url || '')).filter(Boolean)
+  }
+  return []
+}
+
+function AddProductModal({ onClose, categories = [], colors = [], sizes = [], onSave, productToEdit }) {
+  const [form, setForm] = useState(() => ({
     name: productToEdit?.name || '',
     description: productToEdit?.description || '',
     price: productToEdit?.price || '',
     stockQuantity: productToEdit?.stockQuantity || '',
-    categoryIds: productToEdit?.categoryIds || (productToEdit?.categoryId ? [productToEdit.categoryId] : []),
-    selectedColors: productToEdit?.selectedColors || [],
-    selectedSizes: productToEdit?.selectedSizes || [],
+    categoryIds: getInitialCategoryIds(productToEdit, categories),
+    selectedColors: getInitialColorIds(productToEdit, colors),
+    selectedSizes: getInitialSizeIds(productToEdit, sizes),
     imageUrl: '',
-    images: productToEdit?.images || [],     // preview data URLs
+    images: getInitialImages(productToEdit),
     imageFiles: [], // original File objects (sent to the API)
-  })
+  }))
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
   const toggleCat = (id) => {
+    const numId = Number(id)
     setForm(f => ({
       ...f,
-      categoryIds: f.categoryIds.includes(id)
-        ? f.categoryIds.filter(c => c !== id)
-        : [...f.categoryIds, id],
+      categoryIds: f.categoryIds.some(c => Number(c) === numId)
+        ? f.categoryIds.filter(c => Number(c) !== numId)
+        : [...f.categoryIds, numId],
     }))
   }
 
   const toggleColor = (id) => {
+    const numId = Number(id)
     setForm(f => ({
       ...f,
-      selectedColors: f.selectedColors.includes(id)
-        ? f.selectedColors.filter(c => c !== id)
-        : [...f.selectedColors, id],
+      selectedColors: f.selectedColors.some(c => Number(c) === numId)
+        ? f.selectedColors.filter(c => Number(c) !== numId)
+        : [...f.selectedColors, numId],
     }))
   }
 
   const toggleSize = (id) => {
+    const numId = Number(id)
     setForm(f => ({
       ...f,
-      selectedSizes: f.selectedSizes.includes(id)
-        ? f.selectedSizes.filter(s => s !== id)
-        : [...f.selectedSizes, id],
+      selectedSizes: f.selectedSizes.some(s => Number(s) === numId)
+        ? f.selectedSizes.filter(s => Number(s) !== numId)
+        : [...f.selectedSizes, numId],
     }))
   }
 
@@ -248,7 +336,7 @@ function AddProductModal({ onClose, categories, colors = [], sizes = [], onSave,
             <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>Categories</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {categories.map(c => {
-                const sel = form.categoryIds.includes(c.id)
+                const sel = form.categoryIds.some(id => Number(id) === Number(c.id))
                 return (
                   <button key={c.id} type="button" onClick={() => toggleCat(c.id)} style={{
                     padding: '5px 12px', fontSize: 12, borderRadius: 'var(--radius)',
@@ -267,7 +355,7 @@ function AddProductModal({ onClose, categories, colors = [], sizes = [], onSave,
             <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>Colors</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {colors.map(c => {
-                const sel = form.selectedColors.includes(c.id)
+                const sel = form.selectedColors.some(id => Number(id) === Number(c.id))
                 return (
                   <button key={c.id} type="button" onClick={() => toggleColor(c.id)} style={{
                     padding: '5px 12px', fontSize: 12, borderRadius: 'var(--radius)',
@@ -289,7 +377,7 @@ function AddProductModal({ onClose, categories, colors = [], sizes = [], onSave,
             <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>Sizes</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {sizes.map(s => {
-                const sel = form.selectedSizes.includes(s.id)
+                const sel = form.selectedSizes.some(id => Number(id) === Number(s.id))
                 return (
                   <button key={s.id} type="button" onClick={() => toggleSize(s.id)} style={{
                     padding: '5px 12px', fontSize: 12, borderRadius: 'var(--radius)',
@@ -617,7 +705,7 @@ export default function ProductsSection() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: 20 }}>
               {filtered.map(p => {
                 const firstImg = resolveFirstProductImage(p)
-                const catName = p.categories?.[0]?.name || p.category || (categories.find(c => String(c.id) === String(p.categoryId))?.name) || 'Apparel'
+                const catName = resolveCategoryName(p, categories)
 
                 return (
                   <div key={p.id} className="card-lift" style={{
@@ -680,7 +768,7 @@ export default function ProductsSection() {
           ) : (
             <div>
               {filtered.map(p => {
-                const catName = p.categories?.[0]?.name || p.category || (categories.find(c => String(c.id) === String(p.categoryId))?.name) || 'Apparel'
+                const catName = resolveCategoryName(p, categories)
                 const firstImg = resolveFirstProductImage(p)
                 const isInstock = (p.stockQuantity > 0 || p.inStock)
 
@@ -765,7 +853,7 @@ export default function ProductsSection() {
           sizes={sizes}
           productToEdit={editProduct}
           onClose={() => { setShowAddModal(false); setEditProduct(null) }}
-          onSave={editProduct ? (payload) => updateProduct(editProduct.id, payload) : createProduct}
+          onSave={editProduct ? (payload, files) => updateProduct(editProduct.id || editProduct.productId, payload, files) : createProduct}
         />
       )}
     </div>
