@@ -61,6 +61,38 @@ function resolveFirstProductImage(p) {
   return null
 }
 
+function resolveCategoryName(p, categoriesList = []) {
+  // Direct string category
+  if (p.categoryName && typeof p.categoryName === 'string') return p.categoryName
+  if (p.category && typeof p.category === 'string') return p.category
+
+  // Resolve from categories list via categoryId / categoryIds
+  const ids = Array.isArray(p.categoryIds)
+    ? p.categoryIds
+    : p.categoryId != null
+      ? (Array.isArray(p.categoryId) ? p.categoryId : [p.categoryId])
+      : []
+
+  if (ids.length > 0 && categoriesList.length > 0) {
+    const match = categoriesList.find(c => ids.map(Number).includes(Number(c.id ?? c.categoryId)))
+    if (match) return match.name
+  }
+
+  // Resolve from embedded categories array
+  if (Array.isArray(p.categories) && p.categories.length > 0) {
+    const first = p.categories[0]
+    if (typeof first === 'string') return first
+    if (first?.name) return first.name
+    // try to look up by id
+    if ((first?.id ?? first?.categoryId) != null && categoriesList.length > 0) {
+      const match = categoriesList.find(c => Number(c.id ?? c.categoryId) === Number(first.id ?? first.categoryId))
+      if (match) return match.name
+    }
+  }
+
+  return '—'
+}
+
 // ─── Add / Edit Product Modal ──────────────────────────────────────────────────
 function getInitialCategoryIds(p, categoriesList = []) {
   if (!p) return []
