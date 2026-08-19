@@ -96,16 +96,28 @@ function resolveCategoryName(p, categoriesList = []) {
 // ─── Add / Edit Product Modal ──────────────────────────────────────────────────
 function getInitialCategoryIds(p, categoriesList = []) {
   if (!p) return []
+  // Numeric ID arrays — ideal case
   if (Array.isArray(p.categoryIds) && p.categoryIds.length > 0) return p.categoryIds.map(Number)
   if (p.categoryId) return Array.isArray(p.categoryId) ? p.categoryId.map(Number) : [Number(p.categoryId)]
+
+  // API returns categories as an array — could be strings OR objects
   if (Array.isArray(p.categories) && p.categories.length > 0) {
     const ids = p.categories
       .map(c => {
         if (typeof c === 'number') return c
-        if (c.categoryId != null) return Number(c.categoryId)
-        if (c.id != null) return Number(c.id)
-        if (c.name && Array.isArray(categoriesList)) {
-          const match = categoriesList.find(cat => cat.name?.trim().toLowerCase() === String(c.name).trim().toLowerCase())
+        // Object with numeric id
+        if (c != null && typeof c === 'object') {
+          if (c.categoryId != null) return Number(c.categoryId)
+          if (c.id != null) return Number(c.id)
+          // Object with only a name — look up by name
+          if (c.name && categoriesList.length > 0) {
+            const match = categoriesList.find(cat => cat.name?.trim().toLowerCase() === String(c.name).trim().toLowerCase())
+            if (match) return Number(match.id ?? match.categoryId)
+          }
+        }
+        // Plain string like "Jersey shorts" — look up by name in categoriesList
+        if (typeof c === 'string' && categoriesList.length > 0) {
+          const match = categoriesList.find(cat => cat.name?.trim().toLowerCase() === c.trim().toLowerCase())
           if (match) return Number(match.id ?? match.categoryId)
         }
         return null
@@ -114,7 +126,9 @@ function getInitialCategoryIds(p, categoriesList = []) {
       .map(Number)
     if (ids.length > 0) return ids
   }
-  if (p.categoryName && Array.isArray(categoriesList)) {
+
+  // Single string name field
+  if (p.categoryName && categoriesList.length > 0) {
     const match = categoriesList.find(cat => cat.name?.trim().toLowerCase() === String(p.categoryName).trim().toLowerCase())
     if (match) return [Number(match.id ?? match.categoryId)]
   }
@@ -130,6 +144,7 @@ function getInitialColorIds(p, colorsList) {
       if (v.colorId) {
         ids.add(Number(v.colorId))
       } else if (v.color && Array.isArray(colorsList)) {
+        // API returns color as a name string e.g. "Red" — look up by name
         const match = colorsList.find(c => c.name?.trim().toLowerCase() === String(v.color).trim().toLowerCase())
         if (match) ids.add(Number(match.id ?? match.colorId))
       }
@@ -148,6 +163,7 @@ function getInitialSizeIds(p, sizesList) {
       if (v.sizeId) {
         ids.add(Number(v.sizeId))
       } else if (v.size && Array.isArray(sizesList)) {
+        // API returns size as a name string e.g. "M" — look up by name
         const match = sizesList.find(s => s.name?.trim().toUpperCase() === String(v.size).trim().toUpperCase())
         if (match) ids.add(Number(match.id ?? match.sizeId))
       }
@@ -269,38 +285,56 @@ function AddProductModal({ onClose, categories = [], colors = [], sizes = [], on
     setSaving(true)
     setError('')
     try {
-      const variants = []
-      form.selectedColors.forEach(colorId => {
-        form.selectedSizes.forEach(sizeId => {
-          const cId = Number(colorId)
-          const sId = Number(sizeId)
-          if (Number.isInteger(cId) && cId > 0 && Number.isInteger(sId) && sId > 0) {
-            variants.push({
-              colorId: cId,
-              sizeId: sId,
-              price: parseFloat(form.price) || 0,
-              discountPrice: 0,
-              stockQuantity: Math.ceil((parseInt(form.stockQuantity) || 0) / (form.selectedColors.length * form.selectedSizes.length || 1)) || 0,
-            })
-          }
-        })
-      })
-
       const categoryArray = form.categoryIds.map(id => Number(id)).filter(id => Number.isInteger(id) && id > 0)
+      const editId = productToEdit?.productId ?? productToEdit?.id
 
-      const payload = {
-        name: form.name.trim(),
-        description: form.description.trim(),
-        price: parseFloat(form.price) || 0,
-        discountPrice: 0,
-        stockQuantity: parseInt(form.stockQuantity) || 0,
-        categoryId: categoryArray,   // Exact C# DTO property name in Swagger ProductCreateDto & ProductUpdateDto
-        categoryIds: categoryArray,  // Fallback property name
-        variants,
+      let payload
+      if (productToEdit) {
+        // PUT /api/Product/{id} only accepts: name, description, price, stockQuantity, categoryId
+        // Variants cannot be updated via the API — only set at creation time.
+        payload = {
+          name: form.name.trim(),
+          description: form.description.trim(),
+          price: parseFloat(form.price) || 0,
+          discountPrice: 0,
+          stockQuantity: parseInt(form.stockQuantity) || 0,
+          // Only send categoryId when categories have been selected.
+          // Sending [] wipes the field; omitting lets the server keep existing.
+          ...(categoryArray.length > 0 ? { categoryId: categoryArray } : {}),
+        }
+      } else {
+        // POST /api/Product accepts variants too
+        const variants = []
+        form.selectedColors.forEach(colorId => {
+          form.selectedSizes.forEach(sizeId => {
+            const cId = Number(colorId)
+            const sId = Number(sizeId)
+            if (Number.isInteger(cId) && cId > 0 && Number.isInteger(sId) && sId > 0) {
+              variants.push({
+                colorId: cId,
+                sizeId: sId,
+                price: parseFloat(form.price) || 0,
+                discountPrice: 0,
+                stockQuantity: Math.ceil((parseInt(form.stockQuantity) || 0) / (form.selectedColors.length * form.selectedSizes.length || 1)) || 0,
+              })
+            }
+          })
+        })
+        payload = {
+          name: form.name.trim(),
+          description: form.description.trim(),
+          price: parseFloat(form.price) || 0,
+          discountPrice: 0,
+          stockQuantity: parseInt(form.stockQuantity) || 0,
+          categoryId: categoryArray,
+          variants,
+        }
       }
 
-      const created = await onSave(payload, form.imageFiles)
-      const productId = created?.productId ?? created?.id ?? productToEdit?.id
+      const raw = await onSave(payload, form.imageFiles)
+      // Unwrap { success, message, data } envelope or use raw directly
+      const resultData = raw?.data ?? raw
+      const productId = resultData?.productId ?? resultData?.id ?? editId
       if (productId && form.images.length > 0) {
         try {
           localStorage.setItem(`mk_prod_images_${productId}`, JSON.stringify(form.images))
@@ -308,7 +342,9 @@ function AddProductModal({ onClose, categories = [], colors = [], sizes = [], on
       }
       onClose()
     } catch (err) {
-      setError(err.message || 'Failed to save product.')
+      const msg = err?.message || 'Failed to save product. Please try again.'
+      setError(msg)
+      console.error('[handleSave] Update/Create failed:', err)
     } finally {
       setSaving(false)
     }
@@ -366,6 +402,11 @@ function AddProductModal({ onClose, categories = [], colors = [], sizes = [], on
           {/* Categories */}
           <div>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>Categories</label>
+            {productToEdit && (
+              <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: '0 0 8px', lineHeight: 1.5 }}>
+                ⚠ The API currently does not persist category changes on update. Delete and re-create the product to change its category.
+              </p>
+            )}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {categories.map(c => {
                 const sel = form.categoryIds.some(id => Number(id) === Number(c.id))
@@ -382,46 +423,73 @@ function AddProductModal({ onClose, categories = [], colors = [], sizes = [], on
             </div>
           </div>
 
-          {/* Colors */}
-          <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>Colors</label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {colors.map(c => {
-                const sel = form.selectedColors.some(id => Number(id) === Number(c.id))
-                return (
-                  <button key={c.id} type="button" onClick={() => toggleColor(c.id)} style={{
-                    padding: '5px 12px', fontSize: 12, borderRadius: 'var(--radius)',
-                    background: sel ? 'var(--accent)' : 'var(--bg)',
-                    color: sel ? '#fff' : 'var(--text-primary)',
-                    border: `1px solid ${sel ? 'var(--accent)' : 'var(--border-strong)'}`,
-                    cursor: 'pointer', transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 6
-                  }}>
-                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: c.hexCode || '#000', display: 'inline-block' }} />
-                    {c.name}
-                  </button>
-                )
-              })}
+          {/* Colors & Sizes — read-only on edit since API has no variant-update endpoint */}
+          {productToEdit ? (
+            <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '12px 16px' }}>
+              <p style={{ margin: '0 0 8px', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>Current Variants (read-only)</p>
+              <p style={{ margin: '0 0 10px', fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                ⚠ Variants (colors &amp; sizes) cannot be changed after creation — this is a backend API limitation. To change variants, delete and re-create the product.
+              </p>
+              {(productToEdit.variants || []).length === 0 ? (
+                <p style={{ margin: 0, fontSize: 12, color: 'var(--text-muted)' }}>No variants set.</p>
+              ) : (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {(productToEdit.variants || []).map((v, i) => (
+                    <span key={i} style={{
+                      fontSize: 11, padding: '4px 10px', borderRadius: 20,
+                      background: 'var(--surface)', border: '1px solid var(--border-strong)',
+                      color: 'var(--text-secondary)'
+                    }}>
+                      {v.color} / {v.size} — ₦{Number(v.price||0).toLocaleString()} × {v.stockQuantity}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
+          ) : (
+            <>
+              {/* Colors */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>Colors</label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {colors.map(c => {
+                    const sel = form.selectedColors.some(id => Number(id) === Number(c.id))
+                    return (
+                      <button key={c.id} type="button" onClick={() => toggleColor(c.id)} style={{
+                        padding: '5px 12px', fontSize: 12, borderRadius: 'var(--radius)',
+                        background: sel ? 'var(--accent)' : 'var(--bg)',
+                        color: sel ? '#fff' : 'var(--text-primary)',
+                        border: `1px solid ${sel ? 'var(--accent)' : 'var(--border-strong)'}`,
+                        cursor: 'pointer', transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 6
+                      }}>
+                        <span style={{ width: 10, height: 10, borderRadius: '50%', background: c.hexCode || '#000', display: 'inline-block' }} />
+                        {c.name}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
 
-          {/* Sizes */}
-          <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>Sizes</label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {sizes.map(s => {
-                const sel = form.selectedSizes.some(id => Number(id) === Number(s.id))
-                return (
-                  <button key={s.id} type="button" onClick={() => toggleSize(s.id)} style={{
-                    padding: '5px 12px', fontSize: 12, borderRadius: 'var(--radius)',
-                    background: sel ? 'var(--accent)' : 'var(--bg)',
-                    color: sel ? '#fff' : 'var(--text-primary)',
-                    border: `1px solid ${sel ? 'var(--accent)' : 'var(--border-strong)'}`,
-                    cursor: 'pointer', transition: 'all 0.15s'
-                  }}>{s.name}</button>
-                )
-              })}
-            </div>
-          </div>
+              {/* Sizes */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>Sizes</label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {sizes.map(s => {
+                    const sel = form.selectedSizes.some(id => Number(id) === Number(s.id))
+                    return (
+                      <button key={s.id} type="button" onClick={() => toggleSize(s.id)} style={{
+                        padding: '5px 12px', fontSize: 12, borderRadius: 'var(--radius)',
+                        background: sel ? 'var(--accent)' : 'var(--bg)',
+                        color: sel ? '#fff' : 'var(--text-primary)',
+                        border: `1px solid ${sel ? 'var(--accent)' : 'var(--border-strong)'}`,
+                        cursor: 'pointer', transition: 'all 0.15s'
+                      }}>{s.name}</button>
+                    )
+                  })}
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Image Upload */}
           <div>

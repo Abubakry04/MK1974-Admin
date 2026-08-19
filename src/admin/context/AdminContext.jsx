@@ -213,8 +213,11 @@ export function AdminProvider({ children }) {
       setProducts(parsedProds.map(p => ({
         ...p,
         id: p.productId ?? p.id,
+        // API returns categories as plain strings e.g. ["Jersey shorts"].
+        // Store them as { id: null, name: "..." } so the modal's name-lookup
+        // path is used rather than a wrong numeric id.
         categories: (p.categories || []).map(c => {
-          if (typeof c === 'string') return { id: c, name: c };
+          if (typeof c === 'string') return { id: null, name: c };
           return { ...c, id: c.categoryId ?? c.id };
         })
       })))
