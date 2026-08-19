@@ -101,6 +101,10 @@ export function AdminProvider({ children }) {
   const [pendingPayments, setPendingPayments] = useState([])
 
   const fetchAllApiData = useCallback(async (isInitial = false) => {
+    if (!adminUser || !api.getToken()) {
+      console.log('[AdminContext] No admin user or token, skipping API fetch.')
+      return
+    }
     if (isInitial) setApiLoading(true)
     setApiError(null)
     try {
@@ -257,11 +261,13 @@ export function AdminProvider({ children }) {
     } finally {
       if (isInitial) setApiLoading(false)
     }
-  }, [])
+  }, [adminUser])
 
   useEffect(() => {
-    fetchAllApiData(true)
-  }, [fetchAllApiData])
+    if (adminUser) {
+      fetchAllApiData(true)
+    }
+  }, [adminUser, fetchAllApiData])
 
   // ── Auth helpers ──
   const adminLogin = useCallback(async (credentials) => {
@@ -283,12 +289,11 @@ export function AdminProvider({ children }) {
       }
       setAdminUser(adminData)
       localStorage.setItem('mk1974_admin', JSON.stringify(adminData))
-      fetchAllApiData()
       return { success: true }
     } catch (err) {
       return { success: false, error: err.message || 'Login failed. Check your credentials.' }
     }
-  }, [fetchAllApiData])
+  }, [])
 
   const adminRegister = useCallback(async (userData) => {
     try {
@@ -312,10 +317,20 @@ export function AdminProvider({ children }) {
     localStorage.removeItem('mk1974_admin')
     localStorage.removeItem('mk1974_admin_token')
     localStorage.removeItem('mk1974_admin_active_section')
+    
+    // Clear all admin data from memory to secure the UI state
     setProducts([])
     setCategories([])
     setColors([])
     setSizes([])
+    setOrders([])
+    setCustomers([])
+    setReviews([])
+    setDashboardSummary(null)
+    setDashboardOverview(null)
+    setPendingPayments([])
+    setApiError(null)
+
     setActiveSection('dashboard')
   }, [setActiveSection])
 

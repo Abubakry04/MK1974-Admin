@@ -1,9 +1,6 @@
 import React, { Component } from 'react'
-import { AppProvider } from './context/AppContext'
 import { AdminProvider } from './admin/context/AdminContext'
 import AdminLayout from './admin/AdminLayout'
-import Toast from './components/Toast'
-import BackToTop from './components/BackToTop'
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -75,13 +72,9 @@ class ErrorBoundary extends Component {
 export default function App() {
   return (
     <ErrorBoundary>
-      <AppProvider>
-        <AdminProvider>
-          <AdminLayout />
-          <Toast />
-          <BackToTop />
-        </AdminProvider>
-      </AppProvider>
+      <AdminProvider>
+        <AdminLayout />
+      </AdminProvider>
     </ErrorBoundary>
   )
 }

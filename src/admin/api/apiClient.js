@@ -46,20 +46,27 @@ function safeParseJson(text) {
   }
 }
 
-async function request(method, path, body, isPublic = false) {
-  const isAuthPath = path.toLowerCase().includes('/auth/')
-  const isGetMethod = method.toUpperCase() === 'GET'
-  const isPublicRequest = isPublic || isGetMethod
+function enforceAuth(isPublicRequest) {
+  if (isPublicRequest) return
 
-  if (_token && isTokenExpired(_token)) {
-    handleSessionExpiration()
-    if (!isPublicRequest && !isAuthPath) {
-      throw new Error('Your session has expired. Please sign in again.')
-    }
+  if (!_token) {
+    throw new Error('Authentication required. Please sign in.')
   }
 
+  if (isTokenExpired(_token)) {
+    handleSessionExpiration()
+    throw new Error('Your session has expired. Please sign in again.')
+  }
+}
+
+async function request(method, path, body, isPublic = false) {
+  const isAuthPath = path.toLowerCase().includes('/auth/')
+  const isPublicRequest = isPublic || isAuthPath
+
+  enforceAuth(isPublicRequest)
+
   const headers = { 'Content-Type': 'application/json' }
-  if (_token && !isTokenExpired(_token)) {
+  if (_token) {
     headers['Authorization'] = `Bearer ${_token}`
   }
 
@@ -119,8 +126,10 @@ async function request(method, path, body, isPublic = false) {
 
 // For multipart/form-data — browser sets the correct Content-Type + boundary automatically
 async function requestFormData(method, path, formData) {
+  enforceAuth(false)
+
   const headers = {}
-  if (_token) headers['Authorization'] = `Bearer ${_token}`
+  headers['Authorization'] = `Bearer ${_token}`
 
   const fullUrl = `${BASE_URL}${path}`
   console.log(`[requestFormData] ${method} ${fullUrl}`)
@@ -162,13 +171,10 @@ async function requestFormData(method, path, formData) {
 // For sending a raw JSON primitive (e.g. a bare enum string) as the request body
 // PUT /api/Order/{id}/status expects body: "Processing" (not {"status":"Processing"})
 async function requestRaw(method, path, rawValue) {
-  if (_token && isTokenExpired(_token)) {
-    handleSessionExpiration()
-    throw new Error('Your session has expired. Please sign in again.')
-  }
+  enforceAuth(false)
 
   const headers = { 'Content-Type': 'application/json' }
-  if (_token) headers['Authorization'] = `Bearer ${_token}`
+  headers['Authorization'] = `Bearer ${_token}`
 
   let res;
   try {
@@ -205,14 +211,14 @@ async function requestRaw(method, path, rawValue) {
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 export const auth = {
-  login:    (body) => request('POST', '/api/Auth/login', body),
-  register: (body) => request('POST', '/api/Auth/register', body),
+  login:    (body) => request('POST', '/api/Auth/login', body, true),
+  register: (body) => request('POST', '/api/Auth/register', body, true),
 }
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 export const products = {
-  getAll:        (categoryId) => request('GET', `/api/Product${categoryId ? `?categoryId=${categoryId}` : ''}`),
-  getOne:        (id)         => request('GET', `/api/Product/${id}`),
+  getAll:        (categoryId) => request('GET', `/api/Product${categoryId ? `?categoryId=${categoryId}` : ''}`, null, true),
+  getOne:        (id)         => request('GET', `/api/Product/${id}`, null, true),
   create:        (body)       => request('POST', '/api/Product', body),
   update:        (id, body)   => request('PUT', `/api/Product/${id}`, body),
   remove:        (id)         => request('DELETE', `/api/Product/${id}`),
@@ -228,21 +234,21 @@ export const products = {
 
 // ─── Categories ───────────────────────────────────────────────────────────────
 export const categories = {
-  getAll: () => request('GET', '/api/Category'),
+  getAll: () => request('GET', '/api/Category', null, true),
   create: (body) => request('POST', '/api/Category', body),
   remove: (id)   => request('DELETE', `/api/Category/${id}`),
 }
 
 // ─── Colors ───────────────────────────────────────────────────────────────────
 export const colors = {
-  getAll: () => request('GET', '/api/Color'),
+  getAll: () => request('GET', '/api/Color', null, true),
   create: (body) => request('POST', '/api/Color', body),
   remove: (id)   => request('DELETE', `/api/Color/${id}`),
 }
 
 // ─── Sizes ────────────────────────────────────────────────────────────────────
 export const sizes = {
-  getAll: () => request('GET', '/api/Size'),
+  getAll: () => request('GET', '/api/Size', null, true),
   create: (body) => request('POST', '/api/Size', body),
   remove: (id)   => request('DELETE', `/api/Size/${id}`),
 }
