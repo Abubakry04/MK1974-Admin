@@ -10,7 +10,6 @@ export default defineConfig({
       '/api': {
         target: 'https://mk-brand-api.onrender.com',
         changeOrigin: true,
-        secure: false,
       }
     }
   }

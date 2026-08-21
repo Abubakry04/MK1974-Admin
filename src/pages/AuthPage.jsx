@@ -57,8 +57,11 @@ export default function AuthPage() {
         setErrors({ general: result.error })
       }
     } else {
-      showToast('Password reset link sent to ' + form.email)
-      setMode('login')
+      // F-09: Forgot-password API not yet implemented on the backend.
+      // Do NOT show a false success toast. Inform the user honestly.
+      setErrors({ general: 'Password reset is not available yet. Please contact support at support@mk1974.com to reset your password.' })
+      setLoading(false)
+      return
     }
     setLoading(false)
   }

@@ -249,12 +249,9 @@ export function AppProvider({ children }) {
     try { return JSON.parse(localStorage.getItem('mk1974_user') || 'null') } catch { return null }
   })
 
-  // Restore token if user exists on reload
-  useEffect(() => {
-    if (user?.token) {
-      api.setToken(user.token)
-    }
-  }, [user])
+  // Note: customer token is held in-memory only (apiClient module variable).
+  // Users must re-authenticate after a full page reload.
+  // To persist sessions across reloads securely, migrate to HttpOnly cookies.
 
   const login = useCallback(async (credentials) => {
     try {
@@ -271,7 +268,7 @@ export function AppProvider({ children }) {
         firstName: data?.firstName || 'User',
         lastName: data?.lastName || '',
         role: data?.role || 'Customer',
-        token,
+        // F-01: token NOT stored in localStorage — kept in-memory via apiClient module variable
       }
       setUser(clientData)
       localStorage.setItem('mk1974_user', JSON.stringify(clientData))
@@ -316,6 +313,10 @@ export function AppProvider({ children }) {
   })
 
   const placeOrder = useCallback((orderData) => {
+    // F-08: Require authentication before placing an order
+    if (!user) {
+      throw new Error('You must be signed in to place an order.')
+    }
     const newOrder = {
       id: `MK${Date.now().toString().slice(-6)}`,
       ...orderData,
