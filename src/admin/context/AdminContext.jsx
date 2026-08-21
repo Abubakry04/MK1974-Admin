@@ -102,7 +102,7 @@ export function AdminProvider({ children }) {
 
   const fetchAllApiData = useCallback(async (isInitial = false) => {
     if (!adminUser || !api.getToken()) {
-      console.log('[AdminContext] No admin user or token, skipping API fetch.')
+      if (import.meta.env.DEV) console.log('[AdminContext] No admin user or token, skipping API fetch.')
       return
     }
     if (isInitial) setApiLoading(true)
@@ -279,13 +279,13 @@ export function AdminProvider({ children }) {
       const token = typeof data === 'string' ? data : (data?.token || data?.accessToken || data?.jwt)
       if (token) api.setToken(token)
 
+      // F-01: Only persist display-safe fields to localStorage.
+      // The JWT stays in-memory only (apiClient module variable).
       const adminData = {
         email: credentials.email,
         name: data?.firstName ? `${data.firstName} ${data.lastName}` : (data?.name || credentials.email.split('@')[0]),
         role: data?.role || 'Admin',
         avatar: (data?.firstName?.[0] || credentials.email[0]).toUpperCase(),
-        token,
-        rawResponse: data,
       }
       setAdminUser(adminData)
       localStorage.setItem('mk1974_admin', JSON.stringify(adminData))
@@ -337,7 +337,7 @@ export function AdminProvider({ children }) {
   // Auto-logout when session expires or backend returns HTTP 401
   useEffect(() => {
     const handleSessionExpired = () => {
-      console.warn('[AdminContext] Session expired — logging out admin automatically.')
+      if (import.meta.env.DEV) console.warn('[AdminContext] Session expired — logging out admin automatically.')
       adminLogout()
     }
     window.addEventListener('auth_session_expired', handleSessionExpired)

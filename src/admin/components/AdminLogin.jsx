@@ -91,7 +91,7 @@ export default function AdminLogin() {
         {/* Footer */}
         <div style={{ position: 'relative', zIndex: 1 }}>
           <a
-            href="http://localhost:5173"
+            href="https://mk-1974.vercel.app"
             target="_blank"
             rel="noopener noreferrer"
             style={{

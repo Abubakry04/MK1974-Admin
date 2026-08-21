@@ -1,5 +1,4 @@
 // ─── MK Brand API Client ───────────────────────────────────────────────────────
-const DIRECT_BACKEND = 'https://mk-brand-api.onrender.com'
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 // Store the JWT token in memory (backed by localStorage)
@@ -19,13 +18,16 @@ export function isTokenExpired(token) {
   if (!token || typeof token !== 'string') return true
   try {
     const parts = token.split('.')
-    if (parts.length !== 3) return false
+    // F-07: malformed (non-JWT) tokens must be treated as expired, not valid
+    if (parts.length !== 3) return true
     const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
     if (payload && payload.exp) {
       return payload.exp < Math.floor(Date.now() / 1000)
     }
-  } catch {}
-  return false
+  } catch {
+    return true
+  }
+  return true
 }
 
 function handleSessionExpiration() {
@@ -70,28 +72,17 @@ async function request(method, path, body, isPublic = false) {
     headers['Authorization'] = `Bearer ${_token}`
   }
 
-  const primaryUrl = BASE_URL ? `${BASE_URL}${path}` : path
+  // F-04: always go through BASE_URL (Vercel proxy) — no DIRECT_BACKEND fallback
+  const url = BASE_URL ? `${BASE_URL}${path}` : path
   let res
   try {
-    res = await fetch(primaryUrl, {
+    res = await fetch(url, {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
     })
   } catch (err) {
-    if (!primaryUrl.startsWith('http')) {
-      try {
-        res = await fetch(`${DIRECT_BACKEND}${path}`, {
-          method,
-          headers,
-          body: body ? JSON.stringify(body) : undefined,
-        })
-      } catch (err2) {
-        throw new Error('Network error: Unable to connect to server. ' + err2.message)
-      }
-    } else {
-      throw new Error('Network error: Unable to connect to server. ' + err.message)
-    }
+    throw new Error('Network error: Unable to connect to server. ' + err.message)
   }
 
   if (!res.ok) {
@@ -132,10 +123,6 @@ async function requestFormData(method, path, formData) {
   headers['Authorization'] = `Bearer ${_token}`
 
   const fullUrl = `${BASE_URL}${path}`
-  console.log(`[requestFormData] ${method} ${fullUrl}`)
-  for (const [key, val] of formData.entries()) {
-    console.log(`  field: ${key} =`, val instanceof File ? `File(${val.name}, ${val.size}b, ${val.type})` : val)
-  }
 
   let res;
   try {
@@ -160,7 +147,7 @@ async function requestFormData(method, path, formData) {
         msg = rawBody
       }
     }
-    console.error(`[requestFormData] ${res.status} error from ${fullUrl}:`, rawBody)
+    if (import.meta.env.DEV) console.error(`[requestFormData] ${res.status} error from ${fullUrl}:`, rawBody)
     throw new Error(msg)
   }
 

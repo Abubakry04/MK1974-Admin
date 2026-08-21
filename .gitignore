@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Root-level test, seed, and utility scripts (F-05: may contain credentials/hardcoded URLs)
+test_*.js
+add_*.js
+seed_*.js
